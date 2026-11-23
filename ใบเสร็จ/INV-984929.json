@@ -1,0 +1,24 @@
+{
+  "id": "INV-984929",
+  "date": "2026-11-15T09:46:24.929Z",
+  "cashier": "Admin",
+  "paymentMethod": "cash",
+  "bankName": "",
+  "slipImage": "",
+  "items": [
+    {
+      "id": "p1",
+      "name": "ແພຣຕູດຊາດ iPhone 12 Pro Max",
+      "price": 450000,
+      "cost": 200000,
+      "category": "ອາໄຫຼ່ສ້ອມ",
+      "qty": 4
+    }
+  ],
+  "subtotal": 1800000,
+  "discountPercent": 0,
+  "discountAmount": 0,
+  "grandTotal": 1800000,
+  "cashReceived": 1800000,
+  "changeDue": 0
+}

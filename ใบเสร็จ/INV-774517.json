@@ -1,0 +1,24 @@
+{
+  "id": "INV-774517",
+  "date": "2026-11-18T09:39:34.517Z",
+  "cashier": "Admin",
+  "paymentMethod": "bcel_qr",
+  "bankName": "BCEL One QR",
+  "slipImage": "",
+  "items": [
+    {
+      "id": "m_1794994655603",
+      "name": "Samsung EP-TA845XWNGIN 45 Watts Travel Adapter,",
+      "price": 250000,
+      "cost": 99997,
+      "category": "ອາໄຫຼ່ສ້ອມ",
+      "qty": 1
+    }
+  ],
+  "subtotal": 250000,
+  "discountPercent": 0,
+  "discountAmount": 0,
+  "grandTotal": 250000,
+  "cashReceived": 250000,
+  "changeDue": 0
+}

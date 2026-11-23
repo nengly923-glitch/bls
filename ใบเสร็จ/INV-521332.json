@@ -1,0 +1,24 @@
+{
+  "id": "INV-521332",
+  "date": "2026-11-15T09:38:41.332Z",
+  "cashier": "Admin",
+  "paymentMethod": "cash",
+  "bankName": "",
+  "slipImage": "",
+  "items": [
+    {
+      "id": "srv1",
+      "name": "ຄ່າບໍລິການປ່ຽນຈໍ / ປ່ຽນແບັດເຕີຣີ",
+      "price": 150000,
+      "cost": 0,
+      "category": "ຄ່າບໍລິການສ້ອມ",
+      "qty": 6
+    }
+  ],
+  "subtotal": 900000,
+  "discountPercent": 0,
+  "discountAmount": 0,
+  "grandTotal": 900000,
+  "cashReceived": 900000,
+  "changeDue": 0
+}

@@ -1,0 +1,24 @@
+{
+  "id": "INV-110687",
+  "date": "2026-11-16T06:05:10.687Z",
+  "cashier": "Admin",
+  "paymentMethod": "cash",
+  "bankName": "",
+  "slipImage": "",
+  "items": [
+    {
+      "id": "b1",
+      "name": "ແບັດເຕີຣີແທ້ iPhone 11 (ມອກ. ແທ້ 100%)",
+      "price": 650000,
+      "cost": 350000,
+      "category": "ແບັດເຕີຣີ",
+      "qty": 9
+    }
+  ],
+  "subtotal": 5850000,
+  "discountPercent": 0,
+  "discountAmount": 0,
+  "grandTotal": 5850000,
+  "cashReceived": 5850000,
+  "changeDue": 0
+}

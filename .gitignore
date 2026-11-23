@@ -1,0 +1,27 @@
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Environment and secrets
+.env
+.env*.local
+
+# SQLite WAL and lock files
+*.sqlite-wal
+*.sqlite-shm
+
+# Mac OS files
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon
+._*
+
+# Vercel and build outputs
+.vercel/
+dist/
+build/
+
+# Local macOS App Bundle
+I&hmong-mobile.app/

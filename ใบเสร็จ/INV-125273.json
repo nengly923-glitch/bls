@@ -1,0 +1,24 @@
+{
+  "id": "INV-125273",
+  "date": "2026-11-15T09:48:45.273Z",
+  "cashier": "Admin",
+  "paymentMethod": "cash",
+  "bankName": "",
+  "slipImage": "",
+  "items": [
+    {
+      "id": "m_1794736104151",
+      "name": "iPhone 13 128GB (ສີມ່ວງ / ມືສອງ 98%)",
+      "price": 250000,
+      "cost": 100000,
+      "category": "ຄ່າບໍລິການສ້ອມ",
+      "qty": 2
+    }
+  ],
+  "subtotal": 500000,
+  "discountPercent": 0,
+  "discountAmount": 0,
+  "grandTotal": 500000,
+  "cashReceived": 500000,
+  "changeDue": 0
+}

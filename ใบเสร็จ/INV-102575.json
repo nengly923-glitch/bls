@@ -1,0 +1,24 @@
+{
+  "id": "INV-102575",
+  "date": "2026-11-16T06:05:02.575Z",
+  "cashier": "Admin",
+  "paymentMethod": "cash",
+  "bankName": "",
+  "slipImage": "",
+  "items": [
+    {
+      "id": "a2",
+      "name": "ຫົວຊາດໄວ 20W USB-C Fast Charger",
+      "price": 180000,
+      "cost": 85000,
+      "category": "ອຸປະກອນເສີມ",
+      "qty": 8
+    }
+  ],
+  "subtotal": 1440000,
+  "discountPercent": 0,
+  "discountAmount": 0,
+  "grandTotal": 1440000,
+  "cashReceived": 1440000,
+  "changeDue": 0
+}

@@ -1,0 +1,24 @@
+{
+  "id": "INV-600599",
+  "date": "2026-11-17T01:06:40.599Z",
+  "cashier": "Admin",
+  "paymentMethod": "cash",
+  "bankName": "",
+  "slipImage": "",
+  "items": [
+    {
+      "id": "m2",
+      "name": "Samsung Galaxy A54 5G (ຂອງໃໝ່)",
+      "price": 9200000,
+      "cost": 7500000,
+      "category": "ໂທລະສັບມືຖື",
+      "qty": 4
+    }
+  ],
+  "subtotal": 36800000,
+  "discountPercent": 0,
+  "discountAmount": 0,
+  "grandTotal": 36800000,
+  "cashReceived": 36800000,
+  "changeDue": 0
+}

@@ -1,0 +1,48 @@
+{
+  "id": "INV-816755",
+  "date": "2026-11-17T11:26:56.755Z",
+  "cashier": "Admin",
+  "paymentMethod": "cash",
+  "bankName": "",
+  "slipImage": "",
+  "items": [
+    {
+      "id": "s2",
+      "name": "ຈໍ OLED iPhone 12 / 12 Pro (Grade A)",
+      "price": 1500000,
+      "cost": 950000,
+      "category": "ໜ້າຈໍ & ແພຣ",
+      "qty": 3
+    },
+    {
+      "id": "s3",
+      "name": "ຈໍແທ້ Samsung S21 Ultra 5G",
+      "price": 3600000,
+      "cost": 2800000,
+      "category": "ໜ້າຈໍ & ແພຣ",
+      "qty": 2
+    },
+    {
+      "id": "srv1",
+      "name": "ຄ່າບໍລິການປ່ຽນຈໍ / ປ່ຽນແບັດເຕີຣີ",
+      "price": 150000,
+      "cost": 0,
+      "category": "ຄ່າບໍລິການສ້ອມ",
+      "qty": 4
+    },
+    {
+      "id": "m1",
+      "name": "iPhone 13 128GB (ສີມ່ວງ / ມືສອງ 98%)",
+      "price": 13500000,
+      "cost": 11000000,
+      "category": "ໂທລະສັບມືຖື",
+      "qty": 2
+    }
+  ],
+  "subtotal": 39300000,
+  "discountPercent": 0,
+  "discountAmount": 0,
+  "grandTotal": 39300000,
+  "cashReceived": 39300000,
+  "changeDue": 0
+}

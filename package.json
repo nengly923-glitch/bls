@@ -1,0 +1,19 @@
+{
+  "name": "ihmong-mobile",
+  "version": "1.0.0",
+  "description": "I&hmong-mobile POS, Phone Repair & Inventory Management System",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "tunnel": "npx cloudflared tunnel --url http://localhost:3000"
+  },
+  "keywords": [
+    "pos",
+    "repair",
+    "phone",
+    "inventory",
+    "sqlite"
+  ],
+  "author": "I&hmong-mobile",
+  "license": "ISC"
+}

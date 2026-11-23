@@ -1,0 +1,32 @@
+{
+  "id": "INV-122309",
+  "date": "2026-11-16T06:05:22.309Z",
+  "cashier": "Admin",
+  "paymentMethod": "cash",
+  "bankName": "",
+  "slipImage": "",
+  "items": [
+    {
+      "id": "m1",
+      "name": "iPhone 13 128GB (ສີມ່ວງ / ມືສອງ 98%)",
+      "price": 13500000,
+      "cost": 11000000,
+      "category": "ໂທລະສັບມືຖື",
+      "qty": 5
+    },
+    {
+      "id": "m2",
+      "name": "Samsung Galaxy A54 5G (ຂອງໃໝ່)",
+      "price": 9200000,
+      "cost": 7500000,
+      "category": "ໂທລະສັບມືຖື",
+      "qty": 3
+    }
+  ],
+  "subtotal": 95100000,
+  "discountPercent": 0,
+  "discountAmount": 0,
+  "grandTotal": 95100000,
+  "cashReceived": 95100000,
+  "changeDue": 0
+}

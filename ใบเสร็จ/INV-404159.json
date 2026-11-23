@@ -1,0 +1,24 @@
+{
+  "id": "INV-404159",
+  "date": "2026-11-18T09:16:44.159Z",
+  "cashier": "Admin",
+  "paymentMethod": "cash",
+  "bankName": "",
+  "slipImage": "",
+  "items": [
+    {
+      "id": "m_1794915890296",
+      "name": "Apple iphone 18 pro max 256 GB",
+      "price": 50500000,
+      "cost": 5000000,
+      "category": "ໂທລະສັບມືຖື",
+      "qty": 1
+    }
+  ],
+  "subtotal": 50500000,
+  "discountPercent": 0,
+  "discountAmount": 0,
+  "grandTotal": 50500000,
+  "cashReceived": 50500000,
+  "changeDue": 0
+}

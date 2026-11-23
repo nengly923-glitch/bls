@@ -1,0 +1,24 @@
+{
+  "id": "INV-916272",
+  "date": "2026-11-18T09:25:16.272Z",
+  "cashier": "Admin",
+  "paymentMethod": "bank_transfer",
+  "bankName": "LDB Bank (ທະນາຄານພັດທະນາລາວ)",
+  "slipImage": "",
+  "items": [
+    {
+      "id": "m_1794915890296",
+      "name": "Apple iphone 18 pro max 256 GB",
+      "price": 50500000,
+      "cost": 5000000,
+      "category": "ໂທລະສັບມືຖື",
+      "qty": 2
+    }
+  ],
+  "subtotal": 101000000,
+  "discountPercent": 0,
+  "discountAmount": 0,
+  "grandTotal": 101000000,
+  "cashReceived": 101000000,
+  "changeDue": 0
+}

@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>📱 สแกน QR Code เพื่อเปิด "บ้านเล็ก" บนโทรศัพท์มือถือ</title>
+    <link rel="icon" type="image/png" href="/favicon.png">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans Lao", sans-serif;
+            background: #0f172a;
+            color: #f8fafc;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .main-card {
+            background: #ffffff;
+            color: #0f172a;
+            max-width: 560px;
+            width: 100%;
+            border-radius: 28px;
+            padding: 36px 28px;
+            text-align: center;
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.5);
+        }
+        .badge-header {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: #eff6ff;
+            color: #2563eb;
+            font-size: 13px;
+            font-weight: 800;
+            padding: 6px 16px;
+            border-radius: 20px;
+            margin-bottom: 12px;
+        }
+        h1 {
+            font-size: 24px;
+            font-weight: 800;
+            color: #0f172a;
+            margin-bottom: 6px;
+        }
+        p.desc {
+            font-size: 14px;
+            color: #64748b;
+            line-height: 1.5;
+            margin-bottom: 22px;
+        }
+        
+        /* Server Status Banner */
+        .status-banner {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 10px 16px;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            background: #ecfdf5;
+            color: #065f46;
+            border: 1px solid #a7f3d0;
+        }
+        .status-banner.offline {
+            background: #fef2f2;
+            color: #991b1b;
+            border-color: #fecaca;
+        }
+
+        /* QR Frame */
+        .qr-frame {
+            background: #f8fafc;
+            border: 3px dashed #cbd5e1;
+            border-radius: 24px;
+            padding: 24px;
+            display: inline-block;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+        .qr-frame img {
+            width: 250px;
+            height: 250px;
+            display: block;
+            border-radius: 14px;
+        }
+
+        /* URL Display Box */
+        .url-box {
+            background: #f1f5f9;
+            border: 2px solid #e2e8f0;
+            border-radius: 14px;
+            padding: 14px;
+            font-size: 16px;
+            font-weight: 800;
+            color: #1e3a8a;
+            word-break: break-all;
+            margin-bottom: 22px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+        }
+        .btn-copy {
+            background: #2563eb;
+            color: #fff;
+            border: none;
+            padding: 8px 14px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        /* Action Buttons */
+        .btn-row {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 22px;
+        }
+        .action-btn {
+            flex: 1;
+            padding: 14px;
+            border-radius: 14px;
+            font-size: 14px;
+            font-weight: 700;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn-blue {
+            background: #2563eb;
+            color: #ffffff;
+            box-shadow: 0 4px 14px rgba(37, 99, 235, 0.35);
+        }
+        .btn-outline {
+            background: #f8fafc;
+            color: #334155;
+            border: 1px solid #cbd5e1;
+        }
+
+        /* Instructions list */
+        .steps-box {
+            text-align: left;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 16px;
+            padding: 16px 20px;
+            font-size: 13px;
+            line-height: 1.7;
+            color: #334155;
+        }
+        .steps-box h3 {
+            font-size: 14px;
+            font-weight: 800;
+            color: #0f172a;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .steps-box ol {
+            padding-left: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="main-card">
+        <div class="badge-header">
+            <img src="/icon-192.png" alt="Logo" style="width: 22px; height: 22px; border-radius: 6px; object-fit: cover;"> <span>ระบบเครื่องสแกนมือถือ (บ้านเล็ก)</span>
+        </div>
+        
+        <h1>สแกนเปิดแอปสแกนบนโทรศัพท์</h1>
+        <p class="desc">
+            ใช้โทรศัพท์เป็นเครื่องสแกนบาร์โค้ด ยิงสินค้า และสั่งตัดสต็อก<br>
+            โดยคำสั่งจะถูกส่งไปประมวลผลบน <b>เครื่อง Mac (บ้านใหญ่)</b> อัตโนมัติ
+        </p>
+
+        <!-- Live Server Status -->
+        <div id="server-status" class="status-banner">
+            <span id="status-dot">🟢</span>
+            <span id="status-text">กำลังตรวจสอบสถานะเซิร์ฟเวอร์บน Mac...</span>
+        </div>
+
+        <!-- Big QR Code -->
+        <div class="qr-frame">
+            <img id="qr-img" src="https://api.qrserver.com/v1/create-qr-code/?size=280x280&data=http%3A%2F%2F172.30.1.58%3A3000%2Fscanner" alt="QR Code สำหรับมือถือ">
+        </div>
+
+        <!-- URL Text Box -->
+        <div class="url-box">
+            <span id="url-text">http://172.30.1.58:3000/scanner</span>
+            <button onclick="copyLink()" class="btn-copy">📋 คัดลอก</button>
+        </div>
+
+        <!-- Buttons -->
+        <div class="btn-row">
+            <a href="http://localhost:3000" target="_blank" class="action-btn btn-blue">
+                💻 เปิดบ้านใหญ่บน Mac
+            </a>
+            <a href="http://localhost:3000/scanner" target="_blank" class="action-btn btn-outline">
+                📱 เปิดหน้าสแกนบน Mac
+            </a>
+        </div>
+
+        <!-- Steps -->
+        <div class="steps-box">
+            <h3>⚡ ขั้นตอนง่ายๆ ในการใช้งาน:</h3>
+            <ol>
+                <li>ตรวจสอบให้โทรศัพท์ต่อ <b>Wi-Fi เดียวกันกับเครื่อง Mac</b></li>
+                <li>เปิดกล้องในโทรศัพท์มือถือ แล้ว<b>ส่องที่รูป QR Code นี้</b></li>
+                <li>แตะที่ลิงก์เพื่อเปิดหน้าเครื่องสแกน</li>
+                <li>แตะ <b>"เพิ่มไปยังหน้าจอโฮม" (Add to Home Screen)</b> เพื่อเซฟเป็นแอปประจำร้าน</li>
+            </ol>
+        </div>
+    </div>
+
+    <script>
+        function copyLink() {
+            const url = document.getElementById('url-text').textContent;
+            navigator.clipboard.writeText(url).then(() => {
+                alert("คัดลอกลิงก์เรียบร้อยแล้ว: " + url);
+            });
+        }
+
+        // Check Mac Server Status & Update Dynamic IP
+        async function checkServer() {
+            const box = document.getElementById('server-status');
+            const dot = document.getElementById('status-dot');
+            const text = document.getElementById('status-text');
+
+            try {
+                const host = (window.location.origin && window.location.origin.startsWith('http')) 
+                    ? window.location.origin 
+                    : 'http://localhost:3000';
+                const res = await fetch(host + '/api/info');
+                if (res.ok) {
+                    const data = await res.json();
+                    box.className = 'status-banner';
+                    dot.textContent = '🟢';
+                    text.textContent = 'เซิร์ฟเวอร์บน Mac กำลังทำงานปกติ พร้อมเชื่อมต่อกับมือถือ';
+                    if (data.scannerUrl) {
+                        document.getElementById('url-text').textContent = data.scannerUrl;
+                        document.getElementById('qr-img').src = 'https://api.qrserver.com/v1/create-qr-code/?size=280x280&data=' + encodeURIComponent(data.scannerUrl);
+                    }
+                } else {
+                    box.className = 'status-banner offline';
+                    dot.textContent = '🔴';
+                    text.textContent = 'เซิร์ฟเวอร์ยังไม่ได้เปิด กรุณาดับเบิ้ลคลิกไฟล์ 1-เปิดระบบ-ในร้าน-WIFI.command';
+                }
+            } catch (e) {
+                box.className = 'status-banner offline';
+                dot.textContent = '🔴';
+                text.textContent = 'เซิร์ฟเวอร์ยังไม่ได้เปิด กรุณาดับเบิ้ลคลิกไฟล์ 1-เปิดระบบ-ในร้าน-WIFI.command';
+            }
+        }
+
+        checkServer();
+        setInterval(checkServer, 5000);
+    </script>
+</body>
+</html>

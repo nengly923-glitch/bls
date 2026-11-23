@@ -1,0 +1,3443 @@
+<!DOCTYPE html>
+<html lang="lo">
+<head>
+    <link rel="manifest" href="/manifest.json">
+    <link rel="icon" type="image/png" href="/favicon.png">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+    <meta name="theme-color" content="#0ea5e9">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="I&hmong">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>I&hmong-mobile - Mobile Shop & Repair Management System</title>
+    <!-- Google Fonts: Noto Sans Lao & Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Noto+Sans+Lao:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+    <style>
+        /* ================= CSS RESET & DESIGN SYSTEM ================= */
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        :root {
+            --primary: #2563eb;
+            --primary-hover: #1d4ed8;
+            --primary-light: #eff6ff;
+            --primary-dark: #1e3a8a;
+            --accent: #0ea5e9;
+            --bg: #f8fafc;
+            --header-bg: #0f172a;
+            --surface: #ffffff;
+            --surface-subtle: #f1f5f9;
+            --border: #e2e8f0;
+            --border-hover: #cbd5e1;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --text-subtle: #94a3b8;
+            --success: #10b981;
+            --success-light: #ecfdf5;
+            --warning: #f59e0b;
+            --warning-light: #fffbeb;
+            --danger: #ef4444;
+            --danger-light: #fef2f2;
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --radius-full: 9999px;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.07);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+        }
+
+        body {
+            font-family: 'Noto Sans Lao', 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--bg);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* Thermal Receipt 80mm & 58mm Print Setup */
+        #receipt-print-area { display: none !important; }
+        @media print {
+            body * { visibility: hidden !important; }
+            #receipt-print-area, #receipt-print-area * { visibility: visible !important; }
+            #receipt-print-area {
+                display: block !important;
+                position: absolute !important;
+                left: 0 !important;
+                top: 0 !important;
+                width: 76mm !important;
+                margin: 0 !important;
+                padding: 4mm !important;
+                color: #000 !important;
+                background: #fff !important;
+                font-family: 'Courier New', Courier, monospace !important;
+            }
+        }
+
+        /* Scrollbars */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: var(--surface-subtle); }
+        ::-webkit-scrollbar-thumb { background: var(--border-hover); border-radius: var(--radius-full); }
+
+        /* ================= APP HEADER ================= */
+        header {
+            background-color: var(--header-bg);
+            color: #ffffff;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        .header-container {
+            max-width: 1440px;
+            margin: 0 auto;
+            padding: 10px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            user-select: none;
+        }
+        .brand-badge {
+            width: 38px;
+            height: 38px;
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            box-shadow: 0 4px 10px rgba(14,165,233,0.3);
+        }
+        .brand-badge img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .brand-title {
+            font-size: 17px;
+            font-weight: 900;
+            letter-spacing: -0.5px;
+            line-height: 1.1;
+        }
+        .brand-sub {
+            font-size: 10.5px;
+            color: #93c5fd;
+            font-weight: 500;
+        }
+
+        /* Nav Tabs */
+        .nav-tabs {
+            display: flex;
+            gap: 4px;
+            background: rgba(255, 255, 255, 0.08);
+            padding: 4px;
+            border-radius: var(--radius-md);
+        }
+        .nav-btn {
+            background: transparent;
+            border: none;
+            color: #94a3b8;
+            font-size: 12.5px;
+            font-weight: 700;
+            padding: 7px 14px;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            transition: all 0.15s ease;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-family: inherit;
+        }
+        .nav-btn:hover { color: #ffffff; background: rgba(255, 255, 255, 0.05); }
+        .nav-btn.active {
+            background: var(--primary);
+            color: #ffffff;
+            box-shadow: 0 2px 8px rgba(37, 99, 235, 0.35);
+        }
+        .nav-count-badge {
+            background: var(--danger);
+            color: #ffffff;
+            font-size: 10px;
+            padding: 1px 6px;
+            border-radius: var(--radius-full);
+            font-weight: 800;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .mode-toggle-group {
+            display: inline-flex;
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: var(--radius-md);
+            padding: 3px;
+            gap: 2px;
+        }
+        .mode-toggle-btn {
+            background: transparent;
+            border: none;
+            color: #94a3b8;
+            font-size: 11.5px;
+            font-weight: 700;
+            padding: 5px 10px;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            transition: all 0.15s;
+            font-family: inherit;
+        }
+        .mode-toggle-btn.active {
+            background: #3b82f6;
+            color: #ffffff;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+        }
+        .btn-install {
+            background: linear-gradient(135deg, #0ea5e9, #2563eb);
+            color: #ffffff;
+            border: none;
+            padding: 6px 12px;
+            border-radius: var(--radius-md);
+            font-size: 11.5px;
+            font-weight: 800;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            box-shadow: 0 3px 8px rgba(14,165,233,0.3);
+        }
+
+        .cloud-badge {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            background: rgba(16, 185, 129, 0.15);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            color: #34d399;
+            padding: 4px 10px;
+            border-radius: var(--radius-full);
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        /* ================= MAIN CONTENT ================= */
+        main {
+            flex: 1;
+            max-width: 1440px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 14px 16px;
+        }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
+        /* ================= POS SECTION ================= */
+        .pos-grid-container {
+            display: grid;
+            grid-template-columns: 1fr 390px;
+            gap: 16px;
+            align-items: start;
+        }
+        @media (max-width: 1024px) {
+            .pos-grid-container { grid-template-columns: 1fr; }
+        }
+
+        .catalog-toolbar {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 10px 14px;
+            box-shadow: var(--shadow-sm);
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+        }
+        .search-box {
+            position: relative;
+            flex: 1;
+            min-width: 220px;
+        }
+        .search-box input {
+            width: 100%;
+            padding: 9px 38px 9px 34px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            font-size: 12.5px;
+            background: var(--surface-subtle);
+            color: var(--text-main);
+            outline: none;
+            transition: all 0.15s;
+            font-family: inherit;
+        }
+        .search-box input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+            background: #ffffff;
+        }
+        .search-icon-left {
+            position: absolute;
+            left: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-subtle);
+            pointer-events: none;
+        }
+        .scan-btn-right {
+            position: absolute;
+            right: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: transparent;
+            border: none;
+            color: var(--primary);
+            cursor: pointer;
+            padding: 4px;
+            display: flex;
+            align-items: center;
+        }
+
+        .category-pills-row {
+            display: flex;
+            gap: 6px;
+            overflow-x: auto;
+            scrollbar-width: none;
+            padding: 2px 0;
+            width: 100%;
+        }
+        .category-pills-row::-webkit-scrollbar { display: none; }
+        .cat-pill {
+            background: var(--surface-subtle);
+            color: var(--text-muted);
+            border: 1px solid var(--border);
+            padding: 6px 12px;
+            border-radius: var(--radius-md);
+            font-size: 11.5px;
+            font-weight: 700;
+            white-space: nowrap;
+            cursor: pointer;
+            transition: all 0.15s;
+            font-family: inherit;
+        }
+        .cat-pill:hover { background: var(--border); color: var(--text-main); }
+        .cat-pill.active {
+            background: var(--primary);
+            color: #ffffff;
+            border-color: var(--primary);
+            box-shadow: 0 2px 6px rgba(37, 99, 235, 0.25);
+        }
+
+        .special-filters-row {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+            margin-top: 6px;
+            padding-top: 6px;
+            border-top: 1px dashed var(--border);
+            width: 100%;
+        }
+        .filter-tag {
+            background: #f1f5f9;
+            border: 1px solid #cbd5e1;
+            padding: 4px 10px;
+            border-radius: 8px;
+            font-size: 11px;
+            font-weight: 700;
+            cursor: pointer;
+            color: #334155;
+            transition: all 0.15s;
+        }
+        .filter-tag:hover { background: #e2e8f0; }
+        .filter-tag.active {
+            background: #0ea5e9;
+            color: #ffffff;
+            border-color: #0284c7;
+        }
+
+        /* Products Grid */
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(185px, 1fr));
+            gap: 12px;
+            max-height: calc(100vh - 230px);
+            overflow-y: auto;
+            padding: 2px;
+        }
+        .product-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 10px;
+            box-shadow: var(--shadow-sm);
+            cursor: pointer;
+            transition: transform 0.12s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+            user-select: none;
+        }
+        .product-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+            border-color: #cbd5e1;
+        }
+        .product-card:active { transform: scale(0.98); }
+        .product-card.out-of-stock {
+            opacity: 0.55;
+            cursor: not-allowed;
+            filter: grayscale(50%);
+        }
+
+        .prod-img-box {
+            height: 110px;
+            background: var(--surface-subtle);
+            border-radius: var(--radius-md);
+            margin-bottom: 8px;
+            overflow: hidden;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            border: 1px solid var(--border);
+        }
+        .prod-img-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .prod-stock-badge {
+            position: absolute;
+            top: 6px;
+            right: 6px;
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(4px);
+            color: #ffffff;
+            font-size: 10px;
+            font-weight: 700;
+            padding: 2px 7px;
+            border-radius: var(--radius-full);
+        }
+        .prod-stock-badge.low { background: #f59e0b; color: #000; }
+        .prod-stock-badge.empty { background: #ef4444; color: #fff; }
+
+        .prod-in-cart-badge {
+            position: absolute;
+            top: 6px;
+            left: 6px;
+            background: #2563eb;
+            color: #ffffff;
+            font-size: 10px;
+            font-weight: 800;
+            padding: 2px 7px;
+            border-radius: var(--radius-full);
+            box-shadow: 0 2px 6px rgba(37,99,235,0.4);
+        }
+
+        .prod-name {
+            font-size: 12.5px;
+            font-weight: 700;
+            line-height: 1.3;
+            margin-bottom: 4px;
+            color: var(--text-main);
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        .prod-barcode {
+            font-size: 10.5px;
+            color: var(--text-muted);
+            font-family: monospace;
+            margin-bottom: 6px;
+        }
+        .prod-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: auto;
+            padding-top: 6px;
+            border-top: 1px solid var(--surface-subtle);
+        }
+        .prod-price {
+            font-size: 14px;
+            font-weight: 800;
+            color: var(--primary);
+            font-family: monospace;
+        }
+        .prod-add-btn {
+            background: var(--primary-light);
+            color: var(--primary);
+            border: 1px solid #bfdbfe;
+            width: 28px;
+            height: 28px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: 800;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+        .prod-add-btn:hover { background: var(--primary); color: #fff; }
+
+        /* Cart Card */
+        .cart-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 14px;
+            box-shadow: var(--shadow-sm);
+            display: flex;
+            flex-direction: column;
+            min-height: 520px;
+        }
+        .cart-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 10px;
+        }
+        .cart-title-wrap {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 14px;
+            font-weight: 800;
+        }
+        .cart-count-badge {
+            background: var(--primary);
+            color: #fff;
+            font-size: 11px;
+            padding: 1px 7px;
+            border-radius: var(--radius-full);
+            font-weight: 800;
+        }
+        .cart-clear-btn {
+            background: transparent;
+            border: none;
+            color: var(--danger);
+            font-size: 11.5px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+        .cart-items-container {
+            flex: 1;
+            overflow-y: auto;
+            max-height: 320px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .cart-item {
+            background: var(--surface-subtle);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 8px 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 8px;
+        }
+        .cart-item-title {
+            font-size: 12px;
+            font-weight: 700;
+            line-height: 1.2;
+            margin-bottom: 2px;
+        }
+        .cart-item-price {
+            font-size: 11px;
+            color: var(--primary);
+            font-weight: 700;
+            font-family: monospace;
+        }
+        .qty-stepper {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .btn-step {
+            background: #ffffff;
+            border: 1px solid var(--border);
+            width: 24px;
+            height: 24px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 800;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .qty-num {
+            font-size: 12px;
+            font-weight: 800;
+            min-width: 20px;
+            text-align: center;
+        }
+        .cart-footer {
+            border-top: 1px solid var(--border);
+            padding-top: 10px;
+            margin-top: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        .summary-line {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+        .summary-line.total-line {
+            font-size: 16px;
+            font-weight: 900;
+            color: var(--text-main);
+            border-top: 1px dashed var(--border);
+            padding-top: 6px;
+            margin-top: 4px;
+        }
+        .btn-checkout {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: #ffffff;
+            border: none;
+            padding: 12px;
+            border-radius: var(--radius-md);
+            font-size: 15px;
+            font-weight: 800;
+            cursor: pointer;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 8px;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+            transition: all 0.15s;
+        }
+        .btn-checkout.disabled {
+            background: #cbd5e1;
+            box-shadow: none;
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
+        /* KPI Cards */
+        .kpi-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 12px;
+            margin-bottom: 14px;
+        }
+        .kpi-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 14px 16px;
+            box-shadow: var(--shadow-sm);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .kpi-label {
+            font-size: 11.5px;
+            font-weight: 700;
+            color: var(--text-muted);
+            margin-bottom: 4px;
+        }
+        .kpi-val {
+            font-size: 20px;
+            font-weight: 900;
+            color: var(--text-main);
+            font-family: monospace;
+        }
+        .kpi-icon {
+            width: 42px;
+            height: 42px;
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+
+        /* Tables */
+        .table-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-sm);
+            overflow: hidden;
+            margin-bottom: 14px;
+        }
+        .table-responsive {
+            width: 100%;
+            overflow-x: auto;
+        }
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12.5px;
+            text-align: left;
+        }
+        .data-table th {
+            background: var(--surface-subtle);
+            color: var(--text-muted);
+            font-weight: 800;
+            font-size: 11px;
+            text-transform: uppercase;
+            padding: 10px 14px;
+            border-bottom: 1px solid var(--border);
+            white-space: nowrap;
+        }
+        .data-table td {
+            padding: 10px 14px;
+            border-bottom: 1px solid var(--border);
+            vertical-align: middle;
+        }
+        .data-table tr:hover td {
+            background: #f8fafc;
+        }
+
+        /* Buttons & Forms */
+        .btn-primary-action {
+            background: var(--primary);
+            color: #ffffff;
+            border: none;
+            padding: 8px 14px;
+            border-radius: var(--radius-md);
+            font-size: 12px;
+            font-weight: 800;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            box-shadow: 0 2px 6px rgba(37,99,235,0.3);
+            font-family: inherit;
+        }
+        .form-input {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            font-size: 12.5px;
+            background: #ffffff;
+            color: var(--text-main);
+            outline: none;
+            font-family: inherit;
+        }
+        .form-input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(37,99,235,0.15);
+        }
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            margin-bottom: 10px;
+        }
+        .form-label {
+            font-size: 11.5px;
+            font-weight: 800;
+            color: var(--text-muted);
+        }
+        .form-row-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        /* Modals */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(4px);
+            z-index: 100;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+        }
+        .modal-overlay.open { display: flex; }
+        .modal-box {
+            background: #ffffff;
+            border-radius: var(--radius-lg);
+            width: 100%;
+            max-width: 520px;
+            max-height: 90vh;
+            overflow-y: auto;
+            padding: 20px;
+            box-shadow: var(--shadow-lg);
+            position: relative;
+        }
+        .modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 14px;
+        }
+        .modal-title {
+            font-size: 16px;
+            font-weight: 900;
+        }
+        .btn-close-modal {
+            background: transparent;
+            border: none;
+            font-size: 22px;
+            cursor: pointer;
+            color: var(--text-subtle);
+        }
+
+        /* Thermal Receipt Paper */
+        .receipt-paper {
+            background: #ffffff;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 16px;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 12px;
+            color: #000;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            margin-bottom: 12px;
+        }
+
+        /* Extra components */
+        .img-preview-box {
+            width: 100%;
+            height: 140px;
+            background: var(--surface-subtle);
+            border: 2px dashed var(--border);
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 6px;
+            position: relative;
+            overflow: hidden;
+        }
+        .img-preview-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+        .img-gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
+            gap: 6px;
+            margin-top: 6px;
+        }
+        .gallery-thumb-item {
+            width: 70px;
+            height: 70px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            overflow: hidden;
+            position: relative;
+            background: #000;
+        }
+        .gallery-thumb-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            cursor: pointer;
+        }
+        .gallery-thumb-item .btn-del-thumb {
+            position: absolute;
+            top: 2px;
+            right: 2px;
+            background: rgba(239,68,68,0.85);
+            color: #fff;
+            border: none;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            font-size: 10px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .folder-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .folder-card {
+            background: var(--surface-subtle);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 10px 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--text-main);
+            box-shadow: var(--shadow-sm);
+        }
+        .date-range-bar {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+            background: #ffffff;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 8px 12px;
+            margin-bottom: 12px;
+        }
+        .date-pill {
+            background: var(--surface-subtle);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 5px 12px;
+            font-size: 11.5px;
+            font-weight: 700;
+            cursor: pointer;
+            color: var(--text-muted);
+            transition: all 0.15s;
+        }
+        .date-pill.active {
+            background: var(--primary);
+            color: #fff;
+            border-color: var(--primary);
+        }
+        .table-thumb {
+            width: 40px;
+            height: 40px;
+            border-radius: 6px;
+            object-fit: cover;
+            border: 1px solid var(--border);
+            cursor: pointer;
+            vertical-align: middle;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Thermal Receipt Print Container -->
+    <div id="receipt-print-area"></div>
+
+    <!-- ==================== APP HEADER ==================== -->
+    <header>
+        <div class="header-container">
+            <div class="brand" onclick="switchTab('pos')">
+                <div class="brand-badge">
+                    <img src="/icon-192.png" alt="I&hmong Logo">
+                </div>
+                <div>
+                    <div class="brand-title">I&hmong-mobile</div>
+                    <div class="brand-sub">ລະບົບຂາຍ, ສ້ອມແປງ & ສາງອາໄຫຼ່ຄົບວົງຈອນ</div>
+                </div>
+            </div>
+
+            <!-- Navigation Tabs -->
+            <nav class="nav-tabs">
+                <button onclick="switchTab('pos')" id="tab-nav-pos" class="nav-btn active">
+                    <span>🛒</span> <span>ຂາຍໜ້າຮ້ານ (POS)</span>
+                </button>
+                <button onclick="switchTab('repairs')" id="tab-nav-repairs" class="nav-btn">
+                    <span>🔧</span> <span>ຮັບສ້ອມແປງ</span>
+                    <span id="nav-repairs-badge" class="nav-count-badge">0</span>
+                </button>
+                <button onclick="switchTab('inventory')" id="tab-nav-inventory" class="nav-btn">
+                    <span>📦</span> <span>ສາງອາໄຫຼ່ & ມືຖື</span>
+                </button>
+                <button onclick="switchTab('reports')" id="tab-nav-reports" class="nav-btn">
+                    <span>📊</span> <span>ລາຍງານ & ຍອດຂາຍ</span>
+                </button>
+                <button onclick="switchTab('settings')" id="tab-nav-settings" class="nav-btn">
+                    <span>⚙️</span> <span>ຕັ້ງຄ່າ & ສຳຮອງ</span>
+                </button>
+            </nav>
+
+            <!-- Header Actions -->
+            <div class="header-actions">
+                <button id="btn-pwa-install" onclick="openInstallQrModal()" class="btn-install" title="ຕິດຕັ້ງເປັນແອັບເທິງ Mac / Desktop">
+                    <span>📲</span> <span>ຕິດຕັ້ງແອັບ (Install)</span>
+                </button>
+
+                <div class="mode-toggle-group">
+                    <button id="mode-btn-frontend" onclick="switchSystemMode('frontend')" class="mode-toggle-btn active">
+                        🏪 ໜ້າຮ້ານ
+                    </button>
+                    <button id="mode-btn-backend" onclick="switchSystemMode('backend')" class="mode-toggle-btn">
+                        🔐 ຫຼັງບ້ານ
+                    </button>
+                </div>
+
+                <button onclick="openStockDeductModal()" style="background:#dc2626; color:#fff; border:none; padding:6px 12px; border-radius:var(--radius-md); font-weight:700; cursor:pointer; font-size:11.5px; display:inline-flex; align-items:center; gap:5px;">
+                    ✂️ ຕັດສະຕັອກດ່ວນ
+                </button>
+
+                <div id="phone-sync-badge" onclick="openPhoneConnectModal()" class="cloud-badge" style="background:#eff6ff; color:#1d4ed8; border:1px solid #bfdbfe; cursor:pointer;" title="ຄລິກເພື່ອເບິ່ງ QR Code ເຊື່ອມຕໍ່ມືຖື">
+                    <span style="color:#10b981; font-weight:900;">●</span>
+                    <span id="phone-sync-text">ມືຖືພ້ອມສະແກນ (ຄລິກເບິ່ງ QR)</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- ==================== BODY CONTENT ==================== -->
+    <main>
+
+        <!-- ================= TAB 1: POS ================= -->
+        <section id="tab-pos" class="tab-content active">
+            <div class="pos-grid-container">
+                <!-- Catalog -->
+                <div>
+                    <div class="catalog-toolbar">
+                        <div class="search-box">
+                            <span class="search-icon-left">🔍</span>
+                            <input type="text" id="pos-search" oninput="renderPosProducts()" placeholder="ຄົ້ນຫາຊື່, IMEI, ບາໂຄດອາໄຫຼ່ (Search / IMEI / Barcode)...">
+                            <button onclick="openBarcodeScanner('pos')" title="Scan barcode/IMEI" class="scan-btn-right">📷</button>
+                        </div>
+                        
+                        <!-- Dynamic Categories -->
+                        <div id="category-pills" class="category-pills-row"></div>
+
+                        <!-- Special Quick Filters -->
+                        <div class="special-filters-row">
+                            <button onclick="setSpecialFilter('all')" id="sf-all" class="filter-tag active">ທັງໝົດ</button>
+                            <button onclick="setSpecialFilter('out_of_stock')" id="sf-out_of_stock" class="filter-tag">🔴 ໝົດສະຕັອກ</button>
+                            <button onclick="setSpecialFilter('low_stock')" id="sf-low_stock" class="filter-tag">🟡 ໃກ້ໝົດ (<=3)</button>
+                            <button onclick="setSpecialFilter('top_sellers')" id="sf-top_sellers" class="filter-tag">🏆 ຂາຍດີສຸດ 1–100</button>
+                            <button onclick="setSpecialFilter('dead_stock')" id="sf-dead_stock" class="filter-tag">⏳ ຄ້າງສະຕັອກຫຼາຍສຸດ</button>
+                        </div>
+                    </div>
+
+                    <!-- Products Grid -->
+                    <div id="pos-products-grid" class="products-grid"></div>
+                </div>
+
+                <!-- Cart -->
+                <div>
+                    <div class="cart-card">
+                        <div class="cart-header">
+                            <div class="cart-title-wrap">
+                                <span>🛒</span>
+                                <span>ລາຍການສັ່ງຊື້ (Cart)</span>
+                                <span id="cart-count-badge" class="cart-count-badge">0</span>
+                            </div>
+                            <button onclick="clearCart()" class="cart-clear-btn">ລ້າງກະຕ່າ</button>
+                        </div>
+
+                        <div id="cart-items" class="cart-items-container"></div>
+
+                        <div class="cart-footer">
+                            <div class="summary-line">
+                                <span>ລວມຍ່ອຍ:</span>
+                                <span id="cart-subtotal" style="font-weight:700;">0 ₭</span>
+                            </div>
+                            <div class="summary-line">
+                                <span>ສ່ວນຫຼຸດ (%): <input type="number" id="cart-discount" value="0" min="0" max="100" onchange="calculateCartTotals()" style="width:50px; padding:2px; font-weight:700; text-align:center;"></span>
+                                <span id="cart-discount-val" style="font-weight:700; color:var(--danger);">-0 ₭</span>
+                            </div>
+                            <div class="summary-line total-line">
+                                <span>ຍອດລວມທັງໝົດ:</span>
+                                <span id="cart-total" style="color:var(--primary); font-size:18px;">0 ₭</span>
+                            </div>
+
+                            <button onclick="openPaymentModal()" id="btn-checkout" class="btn-checkout disabled">
+                                <span>💵</span>
+                                <span>ຊຳລະເງິນ (Pay Now)</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= TAB 2: REPAIRS ================= -->
+        <section id="tab-repairs" class="tab-content">
+            <div class="kpi-row">
+                <div class="kpi-card">
+                    <div>
+                        <div class="kpi-label">ງານສ້ອມທັງໝົດ</div>
+                        <div id="rep-kpi-total" class="kpi-val">0</div>
+                    </div>
+                    <div class="kpi-icon" style="background:#eff6ff; color:#2563eb;">📱</div>
+                </div>
+                <div class="kpi-card">
+                    <div>
+                        <div class="kpi-label">ກຳລັງສ້ອມແປງ</div>
+                        <div id="rep-kpi-in-progress" class="kpi-val" style="color:#2563eb;">0</div>
+                    </div>
+                    <div class="kpi-icon" style="background:#eff6ff; color:#2563eb;">⚙️</div>
+                </div>
+                <div class="kpi-card">
+                    <div>
+                        <div class="kpi-label">ລໍຖ້າອາໄຫຼ່</div>
+                        <div id="rep-kpi-waiting" class="kpi-val" style="color:var(--warning);">0</div>
+                    </div>
+                    <div class="kpi-icon" style="background:#fffbeb; color:var(--warning);">⏳</div>
+                </div>
+                <div class="kpi-card">
+                    <div>
+                        <div class="kpi-label">ສ້ອມແລ້ວ (ລໍຖ້າຮັບ)</div>
+                        <div id="rep-kpi-completed" class="kpi-val" style="color:var(--success);">0</div>
+                    </div>
+                    <div class="kpi-icon" style="background:#ecfdf5; color:var(--success);">✅</div>
+                </div>
+                <div class="kpi-card">
+                    <div>
+                        <div class="kpi-label">ລວມມູນຄ່າງານສ້ອມ</div>
+                        <div id="rep-kpi-revenue" class="kpi-val" style="color:var(--primary);">0 ₭</div>
+                    </div>
+                    <div class="kpi-icon" style="background:#eff6ff; color:var(--primary);">💰</div>
+                </div>
+            </div>
+
+            <!-- Toolbar & Filter -->
+            <div style="background:#ffffff; border:1px solid var(--border); border-radius:var(--radius-lg); padding:10px 14px; margin-bottom:12px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+                <div style="display:flex; gap:6px; flex-wrap:wrap;" id="repair-filter-bar">
+                    <button onclick="setRepairFilter('all')" class="cat-pill active" id="rf-all">ທັງໝົດ</button>
+                    <button onclick="setRepairFilter('pending')" class="cat-pill" id="rf-pending">ຮັບເຄື່ອງແລ້ວ</button>
+                    <button onclick="setRepairFilter('in_progress')" class="cat-pill" id="rf-in_progress">ກຳລັງສ້ອມ</button>
+                    <button onclick="setRepairFilter('waiting_parts')" class="cat-pill" id="rf-waiting_parts">ລໍຖ້າອາໄຫຼ່</button>
+                    <button onclick="setRepairFilter('completed')" class="cat-pill" id="rf-completed">ສ້ອມແລ້ວ</button>
+                    <button onclick="setRepairFilter('delivered')" class="cat-pill" id="rf-delivered">ສົ່ງມອບແລ້ວ</button>
+                </div>
+                <button onclick="openNewRepairModal()" class="btn-primary-action">
+                    <span>➕</span> <span>ເປີດບິນຮັບສ້ອມໃໝ່ (New Job)</span>
+                </button>
+            </div>
+
+            <!-- Repairs Table -->
+            <div class="table-card">
+                <div class="table-responsive">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>ເລກບິນສ້ອມ</th>
+                                <th>ວັນທີຮັບ</th>
+                                <th>ລູກຄ້າ / ເບີໂທ</th>
+                                <th>ລຸ້ນມືຖື / IMEI</th>
+                                <th>ອາການເສຍ</th>
+                                <th>ຮູບສະພາບເຄື່ອງ</th>
+                                <th style="text-align:right;">ລາຄາປະເມີນ / ຈິງ</th>
+                                <th style="text-align:center;">ສະຖານະ</th>
+                                <th style="text-align:center;">ຈັດການ</th>
+                            </tr>
+                        </thead>
+                        <tbody id="repair-table-body"></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= TAB 3: INVENTORY ================= -->
+        <section id="tab-inventory" class="tab-content">
+            <div class="kpi-row">
+                <div class="kpi-card">
+                    <div>
+                        <div class="kpi-label">ລາຍການສິນຄ້າ & ອາໄຫຼ່</div>
+                        <div id="inv-count-total" class="kpi-val">0</div>
+                    </div>
+                    <div class="kpi-icon" style="background:#eff6ff;">📦</div>
+                </div>
+                <div class="kpi-card">
+                    <div>
+                        <div class="kpi-label">ມູນຄ່າຂາຍລວມສະຕັອກ</div>
+                        <div id="inv-val-total" class="kpi-val" style="color:var(--success);">0 ₭</div>
+                    </div>
+                    <div class="kpi-icon" style="background:#ecfdf5;">💰</div>
+                </div>
+                <div class="kpi-card">
+                    <div>
+                        <div class="kpi-label">ຕົ້ນທຶນສະຕັອກລວມ</div>
+                        <div id="inv-cost-total" class="kpi-val" style="color:#64748b;">0 ₭</div>
+                    </div>
+                    <div class="kpi-icon" style="background:#f1f5f9;">🏷️</div>
+                </div>
+                <div class="kpi-card">
+                    <div>
+                        <div class="kpi-label">ອາໄຫຼ່ໃກ້ໝົດ (<=3)</div>
+                        <div id="inv-count-low" class="kpi-val" style="color:var(--warning);">0</div>
+                    </div>
+                    <div class="kpi-icon" style="background:#fffbeb;">⚠️</div>
+                </div>
+                <div class="kpi-card">
+                    <div>
+                        <div class="kpi-label">ໝົດສະຕັອກ</div>
+                        <div id="inv-count-out" class="kpi-val" style="color:var(--danger);">0</div>
+                    </div>
+                    <div class="kpi-icon" style="background:#fef2f2;">🚫</div>
+                </div>
+            </div>
+
+            <!-- Inventory Table Card -->
+            <div class="table-card">
+                <div style="padding:10px 14px; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+                    <div style="display:flex; gap:8px; flex:1; max-width:500px;">
+                        <input type="text" id="inv-search" oninput="renderInventoryTable()" placeholder="ຄົ້ນຫາຊື່, ບາໂຄດ, IMEI..." class="form-input" style="padding:6px 10px;">
+                        <select id="inv-cat-filter" onchange="renderInventoryTable()" class="form-input" style="width:160px; padding:6px 8px;">
+                            <option value="all">ທຸກໝວດໝູ່</option>
+                        </select>
+                    </div>
+                    <div style="display:flex; gap:6px;">
+                        <button onclick="openCategoryModal()" class="btn-primary-action" style="background:#475569;">
+                            <span>📁</span> <span>ຈັດການໝວດໝູ່</span>
+                        </button>
+                        <button onclick="openProductModal()" class="btn-primary-action">
+                            <span>➕</span> <span>ເພີ່ມສິນຄ້າ / ອາໄຫຼ່ໃໝ່</span>
+                        </button>
+                    </div>
+                </div>
+                <div class="table-responsive">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>ຮູບ</th>
+                                <th>ສິນຄ້າ / ບາໂຄດ / IMEI</th>
+                                <th>ໝວດໝູ່</th>
+                                <th style="text-align:right;">ຕົ້ນທຶນ</th>
+                                <th style="text-align:right;">ລາຄາຂາຍ</th>
+                                <th style="text-align:center;">ສະຕັອກ</th>
+                                <th style="text-align:center;">ປະກັນ</th>
+                                <th style="text-align:center;">ຈັດການ</th>
+                            </tr>
+                        </thead>
+                        <tbody id="inventory-table-body"></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= TAB 4: REPORTS & ANALYTICS ================= -->
+        <section id="tab-reports" class="tab-content">
+            <!-- Date Filter Bar -->
+            <div class="date-range-bar">
+                <span style="font-weight:800; font-size:12.5px;">ຊ່ວງເວລາ:</span>
+                <button onclick="setReportPeriod('today')" id="dp-today" class="date-pill active">ມື້ນີ້</button>
+                <button onclick="setReportPeriod('month')" id="dp-month" class="date-pill">ເດືອນນີ້</button>
+                <button onclick="setReportPeriod('year')" id="dp-year" class="date-pill">ປີນີ້</button>
+                <button onclick="setReportPeriod('all_time')" id="dp-all_time" class="date-pill">ທັງໝົດ</button>
+                
+                <div style="display:flex; align-items:center; gap:4px; margin-left:auto;">
+                    <span style="font-size:11.5px; color:var(--text-muted);">ຕັ້ງແຕ່ວັນທີ:</span>
+                    <input type="date" id="rep-date-from" class="form-input" style="width:130px; padding:4px 6px;">
+                    <span style="font-size:11.5px; color:var(--text-muted);">ຫາ:</span>
+                    <input type="date" id="rep-date-to" class="form-input" style="width:130px; padding:4px 6px;">
+                    <button onclick="applyCustomDateRange()" class="btn-primary-action" style="padding:4px 10px;">🔍 ສະແດງ</button>
+                </div>
+            </div>
+
+            <!-- KPI Summary Cards -->
+            <div class="kpi-row">
+                <div class="kpi-card">
+                    <div>
+                        <div class="kpi-label">ຍອດຂາຍສິນຄ້າ (POS)</div>
+                        <div id="rep-kpi-pos" class="kpi-val" style="color:var(--primary);">0 ₭</div>
+                    </div>
+                    <div class="kpi-icon" style="background:#eff6ff;">🛒</div>
+                </div>
+                <div class="kpi-card">
+                    <div>
+                        <div class="kpi-label">ຍອດຮັບງານສ້ອມ (Repairs)</div>
+                        <div id="rep-kpi-rep" class="kpi-val" style="color:#0ea5e9;">0 ₭</div>
+                    </div>
+                    <div class="kpi-icon" style="background:#f0f9ff;">🔧</div>
+                </div>
+                <div class="kpi-card">
+                    <div>
+                        <div class="kpi-label">ລວມລາຍຮັບທັງໝົດ</div>
+                        <div id="rep-kpi-total-rev" class="kpi-val" style="color:var(--success);">0 ₭</div>
+                    </div>
+                    <div class="kpi-icon" style="background:#ecfdf5;">💵</div>
+                </div>
+                <div class="kpi-card">
+                    <div>
+                        <div class="kpi-label">ກຳໄລຄາດຄະເນ (Profit)</div>
+                        <div id="rep-kpi-profit" class="kpi-val" style="color:#16a34a;">0 ₭</div>
+                    </div>
+                    <div class="kpi-icon" style="background:#dcfce7;">📈</div>
+                </div>
+            </div>
+
+            <!-- Orders Sales History -->
+            <div class="table-card">
+                <div style="padding:12px 16px; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+                    <span style="font-weight:800; font-size:13.5px;">🧾 ປະຫວັດການຂາຍ & ໃບບິນ</span>
+                    <div style="display:flex; gap:6px;">
+                        <button onclick="exportOrdersCsv()" class="btn-primary-action" style="padding:5px 10px; font-size:11.5px; background:#475569;">
+                            <span>📥</span> <span>Export CSV</span>
+                        </button>
+                        <button onclick="confirmClearSalesHistory()" style="background:#ef4444; color:#fff; border:none; padding:5px 10px; border-radius:var(--radius-md); font-weight:700; cursor:pointer; font-size:11.5px;">
+                            <span>🗑️</span> <span>ລ້າງປະຫວັດການຂາຍ</span>
+                        </button>
+                    </div>
+                </div>
+                <div class="table-responsive">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>ເລກບິນ</th>
+                                <th>ວັນທີ & ເວລາ</th>
+                                <th>ຜູ້ຂາຍ</th>
+                                <th>ລາຍການສິນຄ້າ</th>
+                                <th>ວິທີຊຳລະ / ທະນາຄານ</th>
+                                <th>ສະລິບໂອນ</th>
+                                <th style="text-align:right;">ຍອດລວມ</th>
+                                <th style="text-align:center;">ພິມຊ້ຳ</th>
+                            </tr>
+                        </thead>
+                        <tbody id="orders-table-body"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Analytics Tables: Top Sellers & Dead Stock -->
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px;">
+                <!-- Top 100 Best Sellers -->
+                <div class="table-card">
+                    <div style="padding:10px 14px; border-bottom:1px solid var(--border); font-weight:800; font-size:13px; color:var(--primary);">
+                        🏆 ສິນຄ້າຂາຍດີທີ່ສຸດ 1–100
+                    </div>
+                    <div class="table-responsive" style="max-height:350px;">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>ອັນດັບ</th>
+                                    <th>ຊື່ສິນຄ້າ</th>
+                                    <th style="text-align:center;">ຂາຍໄດ້ (ອັນ)</th>
+                                    <th style="text-align:right;">ຍອດຂາຍລວມ</th>
+                                </tr>
+                            </thead>
+                            <tbody id="top-sellers-table-body"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Dead Stock -->
+                <div class="table-card">
+                    <div style="padding:10px 14px; border-bottom:1px solid var(--border); font-weight:800; font-size:13px; color:var(--danger);">
+                        ⏳ ສິນຄ້າຄ້າງສະຕັອກຫຼາຍທີ່ສຸດ (Dead Stock)
+                    </div>
+                    <div class="table-responsive" style="max-height:350px;">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>ສິນຄ້າ</th>
+                                    <th style="text-align:center;">ສະຕັອກຄ້າງ</th>
+                                    <th style="text-align:center;">ຂາຍໄດ້</th>
+                                    <th style="text-align:right;">ມູນຄ່າທຶນຈົມ</th>
+                                </tr>
+                            </thead>
+                            <tbody id="dead-stock-table-body"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= TAB 5: SETTINGS ================= -->
+        <section id="tab-settings" class="tab-content">
+            <div style="max-width:800px; margin:0 auto; display:flex; flex-direction:column; gap:14px;">
+                <!-- Store Info -->
+                <div class="table-card" style="padding:20px;">
+                    <h3 style="font-size:15px; font-weight:800; margin-bottom:12px; border-bottom:1px solid var(--border); padding-bottom:8px;">ຂໍ້ມູນຮ້ານສ້ອມ & ຂາຍມືຖື</h3>
+                    <form onsubmit="saveStoreSettings(event)">
+                        <div class="form-row-2">
+                            <div class="form-group">
+                                <label class="form-label">ຊື່ຮ້ານຄ້າ</label>
+                                <input type="text" id="setting-store-name" class="form-input">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">ເບີໂທລະສັບຮ້ານ</label>
+                                <input type="text" id="setting-store-phone" class="form-input">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">ທີ່ຢູ່ຮ້ານ</label>
+                            <input type="text" id="setting-store-address" class="form-input">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">ຂໍ້ຄວາມທ້າຍໃບບິນ (Receipt Footer)</label>
+                            <input type="text" id="setting-receipt-footer" class="form-input">
+                        </div>
+                        <button type="submit" class="btn-primary-action">ບັນທຶກຂໍ້ມູນຮ້ານ</button>
+                    </form>
+                </div>
+
+                <!-- Local Folders on MacBook -->
+                <div class="table-card" style="padding:20px;">
+                    <h3 style="font-size:15px; font-weight:800; margin-bottom:6px;">📁 ໂຟນເດີຈັດເກັບຂໍ້ມູນໃນເຄື່ອງ Mac (My-cloud)</h3>
+                    <p style="font-size:12px; color:var(--text-muted); margin-bottom:12px;">ຂໍ້ມູນທຸກຢ່າງຖືກບັນທຶກລົງໃນໂຟນເດີເຫຼົ່ານີ້ໃນເຄື່ອງ Mac ຢ່າງຖາວອນ ປິດເຄື່ອງຂໍ້ມູນກໍບໍ່ຫາຍ:</p>
+                    <div class="folder-grid">
+                        <div class="folder-card"><span>💾</span> <span>Database/ (ຖານຂໍ້ມູນ SQLite)</span></div>
+                        <div class="folder-card"><span>📱</span> <span>รูปสินค้า/ (ຮູບສິນຄ້າ)</span></div>
+                        <div class="folder-card"><span>🔧</span> <span>รูปงานซ่อม/ (ຮູບສະພາບເຄື່ອງ)</span></div>
+                        <div class="folder-card"><span>🧾</span> <span>ใบเสร็จ/ (ໃບບິນ)</span></div>
+                        <div class="folder-card"><span>📸</span> <span>สลิปโอน/ (ສະລິບໂອນເງິນ)</span></div>
+                        <div class="folder-card"><span>📦</span> <span>สำรองข้อมูล/ (Backup)</span></div>
+                        <div class="folder-card"><span>⚙️</span> <span>ตั้งค่า/ (Settings)</span></div>
+                    </div>
+                </div>
+
+                <!-- Backup & Restore -->
+                <div class="table-card" style="padding:20px;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                        <div>
+                            <h3 style="font-size:15px; font-weight:800;">💾 ສຳຮອງ & ກູ້ຄືນຖານຂໍ້ມູນ SQLite</h3>
+                            <p style="font-size:12px; color:var(--text-muted);">ກັອບປີ້ໄຟລ໌ຖານຂໍ້ມູນໄປໄວ້ໃນໂຟນເດີ <b>สำรองข้อมูล/</b> ເພື່ອປ້ອງກັນຂໍ້ມູນສູນຫາຍ</p>
+                        </div>
+                        <button onclick="createDatabaseBackup()" class="btn-primary-action" style="background:#10b981;">
+                            <span>💾</span> <span>ສຳຮອງຂໍ້ມູນດຽວນີ້</span>
+                        </button>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>ຊື່ໄຟລ໌ ສຳຮອງ</th>
+                                    <th>ຂະໜາດ</th>
+                                    <th>ວັນທີບັນທຶກ</th>
+                                    <th style="text-align:center;">ກູ້ຄືນ</th>
+                                </tr>
+                            </thead>
+                            <tbody id="backups-table-body"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Bank Accounts Management -->
+                <div class="table-card" style="padding:20px;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                        <h3 style="font-size:15px; font-weight:800;">🏦 ບັນຊີທະນາຄານຮັບໂອນເງິນ</h3>
+                        <button onclick="openAddBankModal()" class="btn-primary-action">➕ ເພີ່ມບັນຊີ</button>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>ທະນາຄານ</th>
+                                    <th>ເລກບັນຊີ</th>
+                                    <th>ຊື່ເຈົ້າຂອງບັນຊີ</th>
+                                    <th style="text-align:center;">ລຶບ</th>
+                                </tr>
+                            </thead>
+                            <tbody id="banks-table-body"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- ==================== MODALS ==================== -->
+
+    <!-- 1. CHECKOUT MODAL -->
+    <div id="payment-modal" class="modal-overlay">
+        <div class="modal-box">
+            <div class="modal-header">
+                <div class="modal-title">ຊຳລະເງິນ (Checkout)</div>
+                <button onclick="closePaymentModal()" class="btn-close-modal">&times;</button>
+            </div>
+            
+            <div style="background:var(--primary-light); border:1px solid #bfdbfe; border-radius:var(--radius-md); padding:14px; text-align:center; margin-bottom:14px;">
+                <div style="font-size:11px; font-weight:700; color:var(--primary); text-transform:uppercase;">ຍອດເງິນທີ່ຕ້ອງຊຳລະທັງໝົດ</div>
+                <div id="modal-pay-amount" style="font-size:28px; font-weight:900; color:var(--primary-dark); margin-top:2px;">0 ₭</div>
+            </div>
+
+            <!-- Payment Methods -->
+            <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:6px; margin-bottom:14px;">
+                <button type="button" onclick="selectPaymentMethod('cash')" id="pay-method-cash" class="cat-pill active" style="text-align:center; padding:10px;">
+                    💵 ເງິນສົດ
+                </button>
+                <button type="button" onclick="selectPaymentMethod('bcel_qr')" id="pay-method-bcel_qr" class="cat-pill" style="text-align:center; padding:10px;">
+                    📱 BCEL QR
+                </button>
+                <button type="button" onclick="selectPaymentMethod('bank_transfer')" id="pay-method-bank_transfer" class="cat-pill" style="text-align:center; padding:10px;">
+                    🏦 ໂອນທະນາຄານ
+                </button>
+            </div>
+
+            <!-- Cash Payment Section -->
+            <div id="cash-payment-section">
+                <label class="form-label">ຈຳນວນເງິນທີ່ຮັບມາ</label>
+                <input type="number" id="cash-received-input" oninput="calculateChange()" class="form-input" style="font-size:20px; font-weight:800; text-align:right;">
+                
+                <div style="display:flex; gap:6px; margin-top:8px;" id="quick-cash-buttons"></div>
+
+                <div style="background:#f8fafc; border:1px solid var(--border); border-radius:var(--radius-md); padding:10px 14px; margin-top:10px; display:flex; justify-content:space-between; align-items:center;">
+                    <span style="font-weight:700; font-size:13px;">ເງິນທອນ:</span>
+                    <span id="cash-change-val" style="font-size:18px; font-weight:900; color:var(--primary);">0 ₭</span>
+                </div>
+            </div>
+
+            <!-- BCEL One QR Section -->
+            <div id="bcel-qr-section" style="display:none; text-align:center; padding:14px; background:#f0f9ff; border-radius:var(--radius-md); border:1px solid #bae6fd;">
+                <div style="font-size:12px; font-weight:800; color:#0369a1; margin-bottom:8px;">BCEL One Dynamic QR (ພ້ອມຍອດເງິນ)</div>
+                <div style="display:inline-block; background:#fff; padding:10px; border-radius:10px; border:1px solid #bae6fd;">
+                    <img id="bcel-qr-img" style="width:180px; height:180px; display:block;" src="" alt="BCEL One QR">
+                </div>
+                <p style="font-size:11.5px; color:#64748b; margin-top:6px;">ລູກຄ້າເປີດແອັບ BCEL One ສ່ອງຈ່າຍໄດ້ທັນທີ</p>
+            </div>
+
+            <!-- Bank Transfer Section -->
+            <div id="bank-transfer-section" style="display:none; padding:12px; background:#f8fafc; border-radius:var(--radius-md); border:1px solid var(--border);">
+                <div class="form-group">
+                    <label class="form-label">ເລືອກບັນຊີທະນາຄານຮັບໂອນ</label>
+                    <select id="transfer-bank-select" onchange="updateBankTransferDetails()" class="form-input"></select>
+                </div>
+                <div id="bank-account-details-box" style="background:#fff; border:1px solid var(--border); border-radius:8px; padding:10px; margin-bottom:10px; font-size:12px;"></div>
+
+                <!-- Slip Upload -->
+                <div class="form-group">
+                    <label class="form-label">📸 ແນບສະລິບການໂອນເງິນ (Slip)</label>
+                    <input type="file" id="pay-slip-file" accept="image/*" onchange="handleSlipFileChosen(event)" class="form-input">
+                    <div id="pay-slip-preview-box" class="img-preview-box" style="display:none; height:120px;">
+                        <img id="pay-slip-preview-img" src="" alt="Slip Preview">
+                    </div>
+                    <button type="button" id="btn-del-slip" onclick="removeSlipImage()" style="display:none; color:var(--danger); font-size:11px; border:none; background:none; cursor:pointer; margin-top:4px;">❌ ລຶບສະລິບ</button>
+                </div>
+            </div>
+
+            <div style="display:flex; gap:8px; margin-top:16px;">
+                <button type="button" onclick="closePaymentModal()" class="form-input" style="flex:1; cursor:pointer;">ຍົກເລີກ</button>
+                <button type="button" onclick="confirmPaymentAndComplete()" class="btn-primary-action" style="flex:2; justify-content:center;">
+                    <span>✅</span> <span>ຢືນຢັນ & ພິມບິນ</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. PRODUCT MODAL (WITH IMAGE UPLOAD) -->
+    <div id="product-modal" class="modal-overlay">
+        <div class="modal-box">
+            <div class="modal-header">
+                <div id="product-modal-title" class="modal-title">ເພີ່ມສິນຄ້າ / ອາໄຫຼ່ໃໝ່</div>
+                <button onclick="closeProductModal()" class="btn-close-modal">&times;</button>
+            </div>
+            <form onsubmit="handleSaveProduct(event)">
+                <input type="hidden" id="prod-id">
+                <input type="hidden" id="prod-image-val">
+                
+                <!-- Product Image Upload -->
+                <div class="form-group">
+                    <label class="form-label">ຮູບພາບສິນຄ້າ (Product Image)</label>
+                    <input type="file" id="prod-img-file" accept="image/*" onchange="handleProductImageChosen(event)" class="form-input">
+                    <div id="prod-img-preview-box" class="img-preview-box" style="display:none;">
+                        <img id="prod-img-preview" src="" alt="Product Preview">
+                    </div>
+                    <button type="button" id="btn-del-prod-img" onclick="removeProductImage()" style="display:none; color:var(--danger); font-size:11px; border:none; background:none; cursor:pointer; margin-top:4px;">❌ ລຶບຮູບພາບ</button>
+                </div>
+
+                <div class="form-row-2">
+                    <div class="form-group">
+                        <label class="form-label">ບາໂຄດ / ລະຫັດສິນຄ້າ</label>
+                        <div style="display:flex; gap:6px;">
+                            <input type="text" id="prod-barcode" required class="form-input" style="flex:1;">
+                            <button type="button" onclick="generateBarcode()" class="form-input" style="width:auto; font-weight:700; cursor:pointer;">Auto</button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">ໝວດໝູ່</label>
+                        <div style="display:flex; gap:4px;">
+                            <select id="prod-category" class="form-input" style="flex:1;"></select>
+                            <button type="button" onclick="openCategoryModal()" class="form-input" style="width:auto; cursor:pointer;" title="ເພີ່ມໝວດໝູ່">➕</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">ຊື່ສິນຄ້າ / ລຸ້ນອາໄຫຼ່</label>
+                    <input type="text" id="prod-name" required placeholder="ເຊັ່ນ: ຈໍແທ້ iPhone 13 Pro ຫຼື ແບັດເຕີຣີ Samsung A52" class="form-input">
+                </div>
+
+                <div class="form-row-2">
+                    <div class="form-group">
+                        <label class="form-label">ລາຄາຕົ້ນທຶນ</label>
+                        <input type="number" id="prod-cost" min="0" required class="form-input">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">ລາຄາຂາຍ / ຄ່າສ້ອມ</label>
+                        <input type="number" id="prod-price" min="0" required class="form-input">
+                    </div>
+                </div>
+
+                <div class="form-row-2">
+                    <div class="form-group">
+                        <label class="form-label">ຈຳນວນສະຕັອກ</label>
+                        <input type="number" id="prod-stock" min="0" required class="form-input">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">ໄລຍະເວລາປະກັນ (Warranty)</label>
+                        <input type="text" id="prod-warranty" placeholder="ເຊັ່ນ: 30 ວັນ ຫຼື 1 ປີ" class="form-input">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">ເລກ IMEI (ຖ້າເປັນເຄື່ອງໂທລະສັບ)</label>
+                    <input type="text" id="prod-imei" placeholder="35xxxxxxxxxxxxx" class="form-input font-mono">
+                </div>
+
+                <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid var(--border); padding-top:12px;">
+                    <button type="button" id="btn-modal-delete-prod" onclick="deleteProductFromModal()" style="display:none; background:#fee2e2; color:#b91c1c; border:1px solid #fca5a5; padding:8px 14px; border-radius:8px; font-weight:700; cursor:pointer;">🗑️ ລຶບສິນຄ້ານີ້</button>
+                    <div style="display:flex; gap:8px; margin-left:auto;">
+                        <button type="button" onclick="closeProductModal()" class="form-input" style="width:auto; cursor:pointer;">ຍົກເລີກ</button>
+                        <button type="submit" class="btn-primary-action">ບັນທຶກສິນຄ້າ</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- 3. REPAIR MODAL (WITH CONDITION PHOTOS) -->
+    <div id="repair-modal" class="modal-overlay">
+        <div class="modal-box" style="max-width:580px;">
+            <div class="modal-header">
+                <div id="repair-modal-title" class="modal-title">ເປີດບິນຮັບສ້ອມແປງມືຖືໃໝ່</div>
+                <button onclick="closeRepairModal()" class="btn-close-modal">&times;</button>
+            </div>
+            <form onsubmit="handleSaveRepair(event)">
+                <input type="hidden" id="rep-id">
+                
+                <div class="form-row-2">
+                    <div class="form-group">
+                        <label class="form-label">ຊື່ລູກຄ້າ *</label>
+                        <input type="text" id="rep-cust-name" required placeholder="ເຊັ່ນ: ທ້າວ ຄຳຫຼ້າ" class="form-input">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">ເບີໂທລະສັບລູກຄ້າ *</label>
+                        <input type="text" id="rep-cust-phone" required placeholder="020 xxxx xxxx" class="form-input">
+                    </div>
+                </div>
+
+                <div class="form-row-2">
+                    <div class="form-group">
+                        <label class="form-label">ລຸ້ນມືຖື (Device Model) *</label>
+                        <input type="text" id="rep-device-model" required placeholder="ເຊັ່ນ: iPhone 13 Pro Max" class="form-input">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">ເລກ IMEI / Serial</label>
+                        <input type="text" id="rep-imei" placeholder="35xxxxxxxxxxxxx" class="form-input font-mono">
+                    </div>
+                </div>
+
+                <div class="form-row-2">
+                    <div class="form-group">
+                        <label class="form-label">ລະຫັດປົດລັອກໜ້າຈໍ (Passcode)</label>
+                        <input type="text" id="rep-passcode" placeholder="ເຊັ່ນ: 123456 ຫຼື ບໍ່ມີ" class="form-input">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">ສະຖານະງານສ້ອມ</label>
+                        <select id="rep-status" class="form-input">
+                            <option value="pending">🟡 ຮັບເຄື່ອງແລ້ວ (Pending)</option>
+                            <option value="in_progress">🔵 ກຳລັງສ້ອມ (In Progress)</option>
+                            <option value="waiting_parts">🟠 ລໍຖ້າອາໄຫຼ່ (Waiting Parts)</option>
+                            <option value="completed">🟢 ສ້ອມແລ້ວ-ລໍຖ້າຮັບ (Completed)</option>
+                            <option value="delivered">🟣 ສົ່ງມອບເຄື່ອງແລ້ວ (Delivered)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">ອາການເສຍ / ລາຍລະອຽດງານສ້ອມ *</label>
+                    <textarea id="rep-issue" rows="2" required placeholder="ເຊັ່ນ: ໜ້າຈໍແຕກ, ປ່ຽນແບັດເຕີຣີ, ຊາດບໍ່ເຂົ້າ" class="form-input"></textarea>
+                </div>
+
+                <!-- Photos of Device Condition (ຮູບສະພາບເຄື່ອງ) -->
+                <div class="form-group">
+                    <label class="form-label">📸 ຮູບສະພາບເຄື່ອງກ່ອນ/ຫຼັງສ້ອມ (Device Photos)</label>
+                    <input type="file" id="rep-photos-input" accept="image/*" multiple onchange="handleRepairPhotosChosen(event)" class="form-input">
+                    <div id="rep-photos-gallery" class="img-gallery-grid"></div>
+                </div>
+
+                <div class="form-row-2">
+                    <div class="form-group">
+                        <label class="form-label">ລາຄາປະເມີນ</label>
+                        <input type="number" id="rep-estimated-price" min="0" value="0" class="form-input">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">ລາຄາຈິງ (Actual Price)</label>
+                        <input type="number" id="rep-actual-price" min="0" value="0" class="form-input">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">ບັນທຶກຊ່າງສ້ອມ (Technician Note)</label>
+                    <input type="text" id="rep-technician-note" placeholder="ເຊັ່ນ: ປ່ຽນຈໍແທ້+ແພຣ, ເຄື່ອງເຄີຍຕົກນ້ຳມາກ່ອນ" class="form-input">
+                </div>
+
+                <div style="display:flex; justify-content:flex-end; gap:8px; border-top:1px solid var(--border); padding-top:12px; margin-top:8px;">
+                    <button type="button" onclick="closeRepairModal()" class="form-input" style="width:auto; cursor:pointer;">ຍົກເລີກ</button>
+                    <button type="submit" class="btn-primary-action">ບັນທຶກບິນສ້ອມ</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- 4. RECEIPT PREVIEW MODAL -->
+    <div id="receipt-preview-modal" class="modal-overlay">
+        <div class="modal-box" style="max-width:390px;">
+            <div class="modal-header">
+                <div class="modal-title">ໃບບິນ / ໃບຮັບເຄື່ອງສ້ອມ</div>
+                <button onclick="closeReceiptPreview()" class="btn-close-modal">&times;</button>
+            </div>
+            <div id="receipt-screen-preview" class="receipt-paper"></div>
+            <div style="display:flex; gap:8px; margin-top:14px;">
+                <button onclick="closeReceiptPreview()" class="form-input" style="flex:1; cursor:pointer;">ປິດ</button>
+                <button onclick="window.print()" class="btn-primary-action" style="flex:1; justify-content:center;">
+                    <span>🖨️ ພິມໃບບິນ</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 5. IMAGE LIGHTBOX MODAL (FOR FULL SCREEN PREVIEW OF SLIPS & REPAIR PHOTOS) -->
+    <div id="lightbox-modal" class="modal-overlay" onclick="closeLightbox()">
+        <div class="modal-box slip-view-modal" onclick="event.stopPropagation()">
+            <div class="modal-header">
+                <div id="lightbox-title" class="modal-title">ຮູບພາບ</div>
+                <button onclick="closeLightbox()" class="btn-close-modal">&times;</button>
+            </div>
+            <img id="lightbox-img" src="" alt="Full view">
+            <div style="margin-top:10px;">
+                <button onclick="closeLightbox()" class="form-input" style="cursor:pointer;">ປິດ</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 6. CATEGORY MANAGEMENT MODAL -->
+    <div id="category-modal" class="modal-overlay">
+        <div class="modal-box" style="max-width:400px;">
+            <div class="modal-header">
+                <div class="modal-title">📁 ຈັດການໝວດໝູ່ສິນຄ້າ</div>
+                <button onclick="closeCategoryModal()" class="btn-close-modal">&times;</button>
+            </div>
+            <div style="display:flex; gap:6px; margin-bottom:12px;">
+                <input type="text" id="new-cat-name-input" placeholder="ຊື່ໝວດໝູ່ໃໝ່..." class="form-input">
+                <button onclick="addNewCategory()" class="btn-primary-action" style="white-space:nowrap;">➕ ເພີ່ມ</button>
+            </div>
+            <div id="category-list-box" style="max-height:260px; overflow-y:auto; display:flex; flex-direction:column; gap:6px;"></div>
+        </div>
+    </div>
+
+    <!-- 7. ADD BANK MODAL -->
+    <div id="bank-modal" class="modal-overlay">
+        <div class="modal-box" style="max-width:420px;">
+            <div class="modal-header">
+                <div class="modal-title">🏦 ເພີ່ມບັນຊີທະນາຄານຮັບໂອນ</div>
+                <button onclick="closeBankModal()" class="btn-close-modal">&times;</button>
+            </div>
+            <form onsubmit="handleSaveBank(event)">
+                <div class="form-group">
+                    <label class="form-label">ຊື່ທະນາຄານ</label>
+                    <input type="text" id="bank-name-input" required placeholder="ເຊັ່ນ: BCEL, LDB, Phongsavanh" class="form-input">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">ເລກບັນຊີ</label>
+                    <input type="text" id="bank-acc-num-input" required placeholder="010-xx-xx-xxxxxxx-xxx" class="form-input">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">ຊື່ເຈົ້າຂອງບັນຊີ</label>
+                    <input type="text" id="bank-acc-name-input" required placeholder="ຊື່ຮ້ານ ຫຼື ຊື່ເຈົ້າຂອງ" class="form-input">
+                </div>
+                <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:12px;">
+                    <button type="button" onclick="closeBankModal()" class="form-input" style="width:auto; cursor:pointer;">ຍົກເລີກ</button>
+                    <button type="submit" class="btn-primary-action">ບັນທຶກ</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- 8. CAMERA SCANNER MODAL -->
+    <div id="scanner-modal" class="modal-overlay">
+        <div class="modal-box" style="text-align:center;">
+            <div class="modal-header">
+                <div class="modal-title">ສະແກນບາໂຄດ / IMEI</div>
+                <button onclick="closeBarcodeScanner()" class="btn-close-modal">&times;</button>
+            </div>
+            <div id="reader" style="width:100%; height:250px; background:#0f172a; border-radius:var(--radius-md); overflow:hidden; margin-bottom:10px;"></div>
+            <p style="font-size:12px; color:var(--text-muted);">ວາງກ້ອງໃຫ້ກົງກັບບາໂຄດສິນຄ້າ ຫຼື QR Code</p>
+        </div>
+    </div>
+
+    <!-- 9. PHONE CONNECT QR MODAL -->
+    <div id="phone-connect-modal" class="modal-overlay">
+        <div class="modal-box" style="text-align:center; max-width:440px;">
+            <div class="modal-header">
+                <div class="modal-title">📱 ເຊື່ອມຕໍ່ມືຖື Android ເປັນເຄື່ອງສະແກນ</div>
+                <button onclick="closePhoneConnectModal()" class="btn-close-modal">&times;</button>
+            </div>
+            <p style="font-size:12px; color:var(--text-muted); margin-bottom:12px;">
+                ໃຫ້ມືຖືຕໍ່ <b>Wi-Fi ດຽວກັນກັບ Mac</b> ແລ້ວສ່ອງ QR Code ນີ້:
+            </p>
+            <div style="background:#f8fafc; border:2px dashed #cbd5e1; border-radius:16px; padding:16px; display:inline-block; margin-bottom:12px;">
+                <img id="modal-phone-qr-img" style="width:200px; height:200px; display:block;" src="" alt="Scanner QR">
+            </div>
+            <div style="background:#f1f5f9; padding:8px 12px; border-radius:8px; font-size:12px; font-weight:800; font-family:monospace; margin-bottom:12px; word-break:break-all;">
+                <span id="modal-phone-url-text">http://172.30.1.58:3000/scanner</span>
+            </div>
+            <div style="background:#eff6ff; border:1px solid #bfdbfe; border-radius:8px; padding:10px; font-size:11.5px; text-align:left; color:#1e40af; line-height:1.5;">
+                <b>💡 ຂໍ້ແນະນຳສຳລັບ Android:</b><br>
+                ຖ້າກ້ອງໃນມືຖືບໍ່ຍອມເປີດ ໃຫ້ດັບເບິ້ນຄລິກໄຟລ໌ <b>2-ເປີດລະບົບອອນລາຍ-4G-WIFI.command</b> ຈະໄດ້ລິ້ງ HTTPS ທີ່ເປີດກ້ອງໄດ້ 100% ທຸກລຸ້ນ!
+            </div>
+            <div style="margin-top:14px;">
+                <button onclick="closePhoneConnectModal()" class="form-input" style="cursor:pointer;">ປິດ</button>
+            </div>
+        </div>
+    </div>
+
+        <!-- 10. INSTALL APP & MOBILE SCANNER CONNECT MODAL (WITH QR CODE) -->
+    <div id="install-qr-modal" class="modal-overlay">
+        <div class="modal-box" style="max-width:480px; padding:22px;">
+            <div class="modal-header">
+                <div class="modal-title">📲 ຕິດຕັ້ງແອັບ & ເຊື່ອມຕໍ່ມືຖືສະແກນບາໂຄດ</div>
+                <button onclick="closeInstallQrModal()" class="btn-close-modal">&times;</button>
+            </div>
+
+            <!-- Tab Switcher -->
+            <div style="display:flex; gap:6px; margin-bottom:14px; background:#f1f5f9; padding:4px; border-radius:10px;">
+                <button type="button" onclick="switchInstallTab('mobile')" id="btn-tab-inst-mobile" class="cat-pill active" style="flex:1; text-align:center; padding:8px;">
+                    📱 ສຳລັບມືຖື (ແອັບສະແກນ)
+                </button>
+                <button type="button" onclick="switchInstallTab('desktop')" id="btn-tab-inst-desktop" class="cat-pill" style="flex:1; text-align:center; padding:8px;">
+                    💻 ສຳລັບ Mac (Desktop)
+                </button>
+            </div>
+
+            <!-- Mobile Scanner Tab -->
+            <div id="install-view-mobile" style="text-align:center;">
+                <p style="font-size:12.5px; color:#334155; margin-bottom:12px; line-height:1.5;">
+                    <b>ໃຊ້ກ້ອງມືຖື Android ຫຼື iPhone ສ່ອງ QR Code ນີ້</b><br>
+                    ເພື່ອເປີດເຄື່ອງສະແກນບາໂຄດ ແລະ ຕິດຕັ້ງເປັນແອັບຍິງສິນຄ້າປະຈຳຮ້ານ:
+                </p>
+
+                <!-- High-contrast QR Code Box -->
+                <div style="background:#ffffff; border:3px dashed #3b82f6; border-radius:20px; padding:16px; display:inline-block; box-shadow:0 8px 24px rgba(37,99,235,0.15); margin-bottom:12px;">
+                    <img id="install-mobile-qr-img" style="width:230px; height:230px; display:block; border-radius:10px;" src="" alt="Mobile Scanner QR">
+                </div>
+
+                <!-- URL Display & Copy -->
+                <div style="background:#f8fafc; border:1px solid #cbd5e1; border-radius:10px; padding:10px 12px; display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:12px;">
+                    <span id="install-mobile-url-text" style="font-family:monospace; font-size:12.5px; font-weight:800; color:#1e40af; word-break:break-all;"></span>
+                    <button onclick="copyInstallLink()" style="background:#2563eb; color:#fff; border:none; padding:6px 12px; border-radius:6px; font-size:11px; font-weight:700; cursor:pointer; white-space:nowrap;">📋 ຄັດລອກລິ້ງ</button>
+                </div>
+
+                <!-- Info Box -->
+                <div style="background:#eff6ff; border:1px solid #bfdbfe; border-radius:12px; padding:12px; font-size:11.5px; text-align:left; color:#1e40af; line-height:1.6;">
+                    <b>⚡ ວິທີໃຊ້ງານງ່າຍໆ ເທິງມືຖື:</b>
+                    <ol style="margin-left:18px; margin-top:4px;">
+                        <li>ກວດສອບໃຫ້ມືຖືຕໍ່ <b>Wi-Fi ດຽວກັນກັບ Mac</b> (ຫຼື ໃຊ້ໄຟລ໌ <b>2-ເປີດລະບົບອອນລາຍ-4G-WIFI.command</b>)</li>
+                        <li>ສ່ອງ QR Code ນີ້ ແລ້ວແຕະ <b>"Add to Home Screen"</b> ເພື່ອເຊບເປັນແອັບ</li>
+                        <li>ເມື່ອຍິງບາໂຄດ <b>ຈະມີສຽງປີ๊ບ! ດັງຂຶ້ນທຸກຄັ້ງ</b> ແລະ ສົ່ງຂໍ້ມູນເຂົ້າ Mac ແບບ Real-time!</li>
+                    </ol>
+                </div>
+            </div>
+
+            <!-- Desktop App Tab -->
+            <div id="install-view-desktop" style="display:none; text-align:left;">
+                <div style="background:#f8fafc; border:1px solid #cbd5e1; border-radius:12px; padding:14px; margin-bottom:12px;">
+                    <div style="font-size:13.5px; font-weight:800; color:#0f172a; margin-bottom:6px;">🚀 ເປີດຜ່ານໂປຣແກຣມເທິງ Desktop (ແນະນຳ)</div>
+                    <p style="font-size:12px; color:#475569; line-height:1.5;">
+                        ມີໂປຣແກຣມ <b>I&hmong-mobile.app</b> ພ້ອມໄອຄອນຮູບໃໝ່ ຢູ່ເທິງໜ້າຈໍ Desktop ຂອງ Mac ຮຽບຮ້ອຍແລ້ວ ສາມາດດັບເບິ້ນຄລິກເປີດໃຊ້ງານໄດ້ທັນທີ ໂດຍບໍ່ຕ້ອງເປີດ Terminal!
+                    </p>
+                </div>
+
+                <div style="background:#f8fafc; border:1px solid #cbd5e1; border-radius:12px; padding:14px;">
+                    <div style="font-size:13.5px; font-weight:800; color:#0f172a; margin-bottom:6px;">💻 ຕິດຕັ້ງຜ່ານ Google Chrome (PWA)</div>
+                    <p style="font-size:12px; color:#475569; line-height:1.5; margin-bottom:10px;">
+                        ຄລິກປຸ່ມ 3 ຈຸດມຸມຂວາເທິງຂອງ Chrome > ເລືອກ <b>"Save and share" > "Install I&hmong-mobile..."</b>
+                    </p>
+                    <button onclick="promptDesktopInstall()" class="btn-primary-action" style="width:100%; justify-content:center; padding:10px;">
+                        <span>📲 ຕິດຕັ້ງລົງເຄື່ອງ Mac ດຽວນີ້</span>
+                    </button>
+                </div>
+            </div>
+
+            <div style="margin-top:14px; text-align:center;">
+                <button onclick="closeInstallQrModal()" class="form-input" style="cursor:pointer; width:auto; padding:6px 24px;">ປິດ</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast container -->
+    <div id="toast-container" style="position:fixed; bottom:20px; right:20px; z-index:9999; display:flex; flex-direction:column; gap:8px;"></div>
+
+    <script src="https://unpkg.com/html5-qrcode"></script>
+
+    <!-- ==================== JAVASCRIPT APPLICATION CORE ==================== -->
+    <script>
+        /* ================= STATE ================= */
+        let products = [];
+        let repairs = [];
+        let orders = [];
+        let categories = ["ໂທລະສັບມືຖື", "ໜ້າຈໍ & ແພຣ", "ແບັດເຕີຣີ", "ອາໄຫຼ່ສ້ອມ", "ອຸປະກອນເສີມ", "ຄ່າບໍລິການສ້ອມ"];
+        let bankAccounts = [];
+        let backups = [];
+        let settings = {
+            storeName: "I&hmong-mobile",
+            storePhone: "+856 20 5555 9999",
+            storeAddress: "ຕະຫຼາດເຊົ້າ, ນະຄອນຫຼວງວຽງຈັນ (Vientiane Capital)",
+            receiptFooter: "ຮັບປະກັນງານສ້ອມຕາມເງື່ອນໄຂ • ຂອບໃຈທີ່ໄວ້ວາງໃຈ!",
+            currency: "₭"
+        };
+        let cart = [];
+        let selectedCategory = "all";
+        let selectedSpecialFilter = "all";
+        let selectedRepairFilter = "all";
+        let paymentMethod = "cash";
+        let reportPeriod = "today";
+        let activeRepairPhotos = [];
+        let currentSlipBase64 = null;
+        let html5QrCode = null;
+
+        /* ================= INITIALIZATION ================= */
+        document.addEventListener("DOMContentLoaded", () => {
+            loadAllData();
+            initSSE();
+            renderQuickCashButtons();
+        });
+
+        // Real-time Push from Phone Scanner (SSE)
+        function initSSE() {
+            if (!window.EventSource) return;
+            const evSource = new EventSource("/api/events");
+            evSource.onopen = () => {
+                const badge = document.getElementById("phone-sync-text");
+                if (badge) badge.textContent = "ມືຖືພ້ອມສະແກນ 🟢";
+            };
+            evSource.onmessage = (e) => {
+                try {
+                    const data = JSON.parse(e.data);
+                    if (data.type === "phone_scan_cart") {
+                        addToCart(data.productId);
+                        showToast(`📱 ມືຖືຍິງສິນຄ້າ: ${data.productName} ເຂົ້າກະຕ່າແລ້ວ!`, "success");
+                    } else if (data.type === "stock_updated" || data.type === "product_saved" || data.type === "product_deleted") {
+                        syncProductsOnly();
+                        if (data.type === "stock_updated" && data.productName) {
+                            showToast(`✂️ ຕັດສະຕັອກ: ${data.productName} ອອກ ${data.deducted} (ເຫຼືອ ${data.remainingStock})`, "info");
+                        }
+                    } else if (data.type === "order_created") {
+                        syncProductsOnly();
+                    }
+                } catch (err) {}
+            };
+        }
+
+        /* ================= DATA PERSISTENCE (DIRECT SQLITE) ================= */
+        async function loadAllData() {
+            try {
+                const [pRes, rRes, oRes, cRes, bRes, sRes] = await Promise.all([
+                    fetch("/api/products").catch(() => null),
+                    fetch("/api/repairs").catch(() => null),
+                    fetch("/api/orders").catch(() => null),
+                    fetch("/api/categories").catch(() => null),
+                    fetch("/api/banks").catch(() => null),
+                    fetch("/api/settings").catch(() => null)
+                ]);
+
+                if (pRes && pRes.ok) products = await pRes.json();
+                if (rRes && rRes.ok) repairs = await rRes.json();
+                if (oRes && oRes.ok) orders = await oRes.json();
+                if (cRes && cRes.ok) {
+                    const catData = await cRes.json();
+                    if (Array.isArray(catData) && catData.length > 0) {
+                        categories = catData.map(c => c.name);
+                    }
+                }
+                if (bRes && bRes.ok) bankAccounts = await bRes.json();
+                if (sRes && sRes.ok) settings = { ...settings, ...(await sRes.json()) };
+
+                // Apply settings to form
+                document.getElementById("setting-store-name").value = settings.storeName || "";
+                document.getElementById("setting-store-phone").value = settings.storePhone || "";
+                document.getElementById("setting-store-address").value = settings.storeAddress || "";
+                document.getElementById("setting-receipt-footer").value = settings.receiptFooter || "";
+
+            } catch (err) {
+                console.error("Failed to load from backend:", err);
+            }
+
+            initCategoryPills();
+            renderPosProducts();
+            renderRepairsTable();
+            renderInventoryTable();
+            renderReports();
+            renderBankAccountsList();
+            loadBackupsList();
+            updateRepairBadge();
+        }
+
+        async function syncProductsOnly() {
+            try {
+                const res = await fetch("/api/products");
+                if (res.ok) {
+                    products = await res.json();
+                    renderPosProducts();
+                    renderInventoryTable();
+                }
+            } catch (e) {}
+        }
+
+        function formatMoney(amount) {
+            return Number(amount || 0).toLocaleString() + " " + (settings.currency || "₭");
+        }
+
+        function showToast(msg, type = "success") {
+            const container = document.getElementById("toast-container");
+            const toast = document.createElement("div");
+            toast.style.cssText = `background:${type === 'danger' ? '#ef4444' : (type === 'info' ? '#0ea5e9' : '#10b981')}; color:#fff; padding:10px 16px; border-radius:10px; font-weight:700; font-size:12.5px; box-shadow:0 4px 12px rgba(0,0,0,0.2); animation:slideIn 0.2s ease;`;
+            toast.textContent = msg;
+            container.appendChild(toast);
+            setTimeout(() => toast.remove(), 3500);
+        }
+
+        function switchTab(tabId) {
+            document.querySelectorAll(".tab-content").forEach(el => el.classList.remove("active"));
+            const target = document.getElementById(`tab-${tabId}`);
+            if (target) target.classList.add("active");
+
+            document.querySelectorAll(".nav-btn").forEach(btn => btn.classList.remove("active"));
+            const activeBtn = document.getElementById(`tab-nav-${tabId}`);
+            if (activeBtn) activeBtn.classList.add("active");
+
+            if (tabId === 'repairs') renderRepairsTable();
+            if (tabId === 'inventory') renderInventoryTable();
+            if (tabId === 'reports') renderReports();
+            if (tabId === 'settings') loadBackupsList();
+        }
+
+        function switchSystemMode(mode) {
+            document.getElementById('mode-btn-frontend').classList.toggle('active', mode === 'frontend');
+            document.getElementById('mode-btn-backend').classList.toggle('active', mode === 'backend');
+            renderInventoryTable();
+        }
+
+        /* ================= POS CATALOG & SPECIAL FILTERS ================= */
+        function initCategoryPills() {
+            const container = document.getElementById("category-pills");
+            const selectFilter = document.getElementById("inv-cat-filter");
+            const prodCatSelect = document.getElementById("prod-category");
+
+            const allCats = ["all", ...categories];
+
+            container.innerHTML = allCats.map(cat => `
+                <button onclick="setCategory('${cat}')" class="cat-pill ${selectedCategory === cat ? 'active' : ''}">
+                    ${cat === 'all' ? 'ທຸກໝວດໝູ່' : cat}
+                </button>
+            `).join("");
+
+            if (selectFilter) {
+                selectFilter.innerHTML = allCats.map(cat => `
+                    <option value="${cat}">${cat === 'all' ? 'ທຸກໝວດໝູ່' : cat}</option>
+                `).join("");
+            }
+
+            if (prodCatSelect) {
+                prodCatSelect.innerHTML = categories.map(cat => `
+                    <option value="${cat}">${cat}</option>
+                `).join("");
+            }
+        }
+
+        function setCategory(cat) {
+            selectedCategory = cat;
+            selectedSpecialFilter = "all";
+            updateSpecialFilterPills();
+            initCategoryPills();
+            renderPosProducts();
+        }
+
+        function setSpecialFilter(type) {
+            selectedSpecialFilter = type;
+            updateSpecialFilterPills();
+            renderPosProducts();
+        }
+
+        function updateSpecialFilterPills() {
+            document.querySelectorAll(".filter-tag").forEach(b => b.classList.remove("active"));
+            const active = document.getElementById("sf-" + selectedSpecialFilter);
+            if (active) active.classList.add("active");
+        }
+
+        function renderPosProducts() {
+            const q = (document.getElementById("pos-search").value || "").toLowerCase().trim();
+            const grid = document.getElementById("pos-products-grid");
+
+            // Filter logic
+            let filtered = products.filter(p => {
+                const matchCat = (selectedCategory === "all" || p.category === selectedCategory);
+                const matchQ = p.name.toLowerCase().includes(q) || p.barcode.includes(q) || (p.imei && p.imei.includes(q));
+                return matchCat && matchQ;
+            });
+
+            // Special Filters
+            if (selectedSpecialFilter === 'out_of_stock') {
+                filtered = filtered.filter(p => p.stock <= 0);
+            } else if (selectedSpecialFilter === 'low_stock') {
+                filtered = filtered.filter(p => p.stock > 0 && p.stock <= 3);
+            } else if (selectedSpecialFilter === 'top_sellers') {
+                filtered = [...filtered].sort((a, b) => (b.price * (b.stock || 1)) - (a.price * (a.stock || 1)));
+            } else if (selectedSpecialFilter === 'dead_stock') {
+                filtered = filtered.filter(p => p.stock > 5);
+            }
+
+            if (filtered.length === 0) {
+                grid.innerHTML = `<div style="grid-column:1/-1; text-align:center; padding:40px; color:var(--text-subtle);">ບໍ່ພົບລາຍການສິນຄ້າ ຫຼື ອາໄຫຼ່</div>`;
+                return;
+            }
+
+            const catIcons = {
+                "ໂທລະສັບມືຖື": "📱",
+                "ໜ້າຈໍ & ແພຣ": "📺",
+                "ແບັດເຕີຣີ": "🔋",
+                "ອາໄຫຼ່ສ້ອມ": "🔌",
+                "ອຸປະກອນເສີມ": "🛡️",
+                "ຄ່າບໍລິການສ້ອມ": "🔧"
+            };
+
+            grid.innerHTML = filtered.map(p => {
+                // Real-time stock calculation tied to cart
+                const inCartItem = cart.find(x => x.id === p.id);
+                const inCartQty = inCartItem ? inCartItem.qty : 0;
+                const remStock = Math.max(0, p.stock - inCartQty);
+                const isOut = remStock <= 0;
+                const isLow = remStock > 0 && remStock <= 3;
+
+                return `
+                    <div onclick="${isOut ? '' : `addToCart('${p.id}')`}" class="product-card ${isOut ? 'out-of-stock' : ''}">
+                        <div>
+                            <div class="prod-img-box">
+                                ${p.image ? `<img src="${p.image}" alt="${p.name}">` : `<span>${catIcons[p.category] || '📦'}</span>`}
+                                <span class="prod-stock-badge ${isOut ? 'empty' : (isLow ? 'low' : '')}">
+                                    ${isOut ? 'ໝົດສະຕັອກ' : `ເຫຼືອ: ${remStock}`}
+                                </span>
+                                ${inCartQty > 0 ? `<span class="prod-in-cart-badge">🛒 x${inCartQty}</span>` : ''}
+                            </div>
+                            ${p.imei ? `<span style="font-size:10px; background:#dbeafe; color:#1e40af; padding:1px 5px; border-radius:4px; font-weight:700;">IMEI: ${p.imei.slice(-6)}</span>` : ''}
+                            <div class="prod-name">${p.name}</div>
+                            <div class="prod-barcode">${p.barcode} • ປະກັນ ${p.warranty || '30 ວັນ'}</div>
+                        </div>
+                        <div class="prod-footer">
+                            <span class="prod-price">${formatMoney(p.price)}</span>
+                            <button class="prod-add-btn" ${isOut ? 'disabled' : ''}>${isOut ? '🚫' : '➕'}</button>
+                        </div>
+                    </div>
+                `;
+            }).join("");
+        }
+
+        /* ================= CART & REAL-TIME STOCK RETURN ================= */
+        function addToCart(productId) {
+            const p = products.find(x => x.id === productId);
+            if (!p) return;
+
+            const existing = cart.find(x => x.id === productId);
+            const inCartQty = existing ? existing.qty : 0;
+
+            if (inCartQty + 1 > p.stock) {
+                showToast(`ສິນຄ້ານີ້ມີໃນສະຕັອກພຽງ ${p.stock} ຊິ້ນ!`, "danger");
+                return;
+            }
+
+            if (existing) {
+                existing.qty++;
+            } else {
+                cart.push({
+                    id: p.id,
+                    name: p.name,
+                    price: p.price,
+                    cost: p.cost || 0,
+                    category: p.category,
+                    qty: 1
+                });
+            }
+
+            renderCart();
+            renderPosProducts(); // Live return/deduct visual stock in catalog
+        }
+
+        function updateCartQty(productId, delta) {
+            const item = cart.find(x => x.id === productId);
+            if (!item) return;
+
+            const p = products.find(x => x.id === productId);
+            if (!p) return;
+
+            if (delta > 0) {
+                if (item.qty + 1 > p.stock) {
+                    showToast(`ສິນຄ້ານີ້ມີໃນສະຕັອກພຽງ ${p.stock} ຊິ້ນ!`, "danger");
+                    return;
+                }
+                item.qty++;
+            } else {
+                item.qty--;
+                if (item.qty <= 0) {
+                    cart = cart.filter(x => x.id !== productId);
+                }
+            }
+
+            renderCart();
+            renderPosProducts(); // Re-render available stock
+        }
+
+        function removeFromCart(productId) {
+            cart = cart.filter(x => x.id !== productId);
+            renderCart();
+            renderPosProducts(); // Return stock to catalog
+        }
+
+        function clearCart() {
+            cart = [];
+            renderCart();
+            renderPosProducts(); // Return all stock to catalog
+        }
+
+        function renderCart() {
+            const container = document.getElementById("cart-items");
+            const badge = document.getElementById("cart-count-badge");
+            const btnPay = document.getElementById("btn-checkout");
+
+            const count = cart.reduce((sum, it) => sum + it.qty, 0);
+            badge.textContent = count;
+
+            if (cart.length === 0) {
+                container.innerHTML = `<div style="text-align:center; padding:40px 10px; color:var(--text-subtle); font-size:12px;">ກະຕ່າວ່າງເປົ່າ<br>ກະລຸນາຄລິກເລືອກສິນຄ້າ ຫຼື ຍິງບາໂຄດ</div>`;
+                btnPay.classList.add("disabled");
+                calculateCartTotals();
+                return;
+            }
+
+            btnPay.classList.remove("disabled");
+
+            container.innerHTML = cart.map(it => `
+                <div class="cart-item">
+                    <div style="flex:1;">
+                        <div class="cart-item-title">${it.name}</div>
+                        <div class="cart-item-price">${formatMoney(it.price)} x ${it.qty} = ${formatMoney(it.price * it.qty)}</div>
+                    </div>
+                    <div class="qty-stepper">
+                        <button onclick="updateCartQty('${it.id}', -1)" class="btn-step">-</button>
+                        <span class="qty-num">${it.qty}</span>
+                        <button onclick="updateCartQty('${it.id}', 1)" class="btn-step">+</button>
+                    </div>
+                    <button onclick="removeFromCart('${it.id}')" style="background:none; border:none; color:var(--danger); cursor:pointer; font-size:14px; margin-left:4px;">✕</button>
+                </div>
+            `).join("");
+
+            calculateCartTotals();
+        }
+
+        function calculateCartTotals() {
+            const subtotal = cart.reduce((sum, it) => sum + (it.price * it.qty), 0);
+            const discPercent = Number(document.getElementById("cart-discount")?.value || 0);
+            const discVal = Math.round(subtotal * (discPercent / 100));
+            const grandTotal = Math.max(0, subtotal - discVal);
+
+            document.getElementById("cart-subtotal").textContent = formatMoney(subtotal);
+            document.getElementById("cart-discount-val").textContent = `-${formatMoney(discVal)}`;
+            document.getElementById("cart-total").textContent = formatMoney(grandTotal);
+        }
+
+        /* ================= CHECKOUT & SLIP ATTACHMENT ================= */
+        function openPaymentModal() {
+            if (cart.length === 0) return;
+            calculateCartTotals();
+
+            const subtotal = cart.reduce((sum, it) => sum + (it.price * it.qty), 0);
+            const discPercent = Number(document.getElementById("cart-discount").value || 0);
+            const discVal = Math.round(subtotal * (discPercent / 100));
+            const grandTotal = Math.max(0, subtotal - discVal);
+
+            document.getElementById("modal-pay-amount").textContent = formatMoney(grandTotal);
+            document.getElementById("cash-received-input").value = grandTotal;
+            calculateChange();
+
+            // Populate banks
+            const bankSelect = document.getElementById("transfer-bank-select");
+            bankSelect.innerHTML = bankAccounts.map(b => `
+                <option value="${b.id}">${b.bankName} - ${b.accountNumber}</option>
+            `).join("");
+            updateBankTransferDetails();
+
+            // Setup BCEL QR
+            const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=BCEL-ONE-POS-${grandTotal}-${Date.now()}`;
+            document.getElementById("bcel-qr-img").src = qrUrl;
+
+            selectPaymentMethod("cash");
+            document.getElementById("payment-modal").classList.add("open");
+        }
+
+        function closePaymentModal() {
+            document.getElementById("payment-modal").classList.remove("open");
+            removeSlipImage();
+        }
+
+        function selectPaymentMethod(m) {
+            paymentMethod = m;
+            document.getElementById("pay-method-cash").classList.toggle("active", m === "cash");
+            document.getElementById("pay-method-bcel_qr").classList.toggle("active", m === "bcel_qr");
+            document.getElementById("pay-method-bank_transfer").classList.toggle("active", m === "bank_transfer");
+
+            document.getElementById("cash-payment-section").style.display = m === "cash" ? "block" : "none";
+            document.getElementById("bcel-qr-section").style.display = m === "bcel_qr" ? "block" : "none";
+            document.getElementById("bank-transfer-section").style.display = m === "bank_transfer" ? "block" : "none";
+        }
+
+        function updateBankTransferDetails() {
+            const selId = document.getElementById("transfer-bank-select").value;
+            const b = bankAccounts.find(x => x.id === selId);
+            const box = document.getElementById("bank-account-details-box");
+            if (b) {
+                box.innerHTML = `
+                    <div style="font-weight:800; color:var(--primary);">${b.bankName}</div>
+                    <div style="font-size:14px; font-weight:800; font-family:monospace; margin:4px 0;">
+                        ເລກບັນຊີ: ${b.accountNumber}
+                        <button onclick="copyToClipboard('${b.accountNumber}')" style="border:1px solid #cbd5e1; background:#f1f5f9; padding:2px 6px; border-radius:4px; font-size:10px; cursor:pointer;">ຄັດລອກ</button>
+                    </div>
+                    <div style="color:var(--text-muted);">ຊື່ບັນຊີ: ${b.accountName}</div>
+                `;
+            } else {
+                box.innerHTML = `ຍັງບໍ່ມີຂໍ້ມູນບັນຊີ`;
+            }
+        }
+
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text);
+            showToast("ຄັດລອກເລກບັນຊີແລ້ວ!", "info");
+        }
+
+        function renderQuickCashButtons() {
+            const container = document.getElementById("quick-cash-buttons");
+            const values = [50000, 100000, 500000, 1000000];
+            container.innerHTML = values.map(v => `
+                <button type="button" onclick="addQuickCash(${v})" class="form-input" style="flex:1; text-align:center; padding:6px; font-weight:700; cursor:pointer; font-size:11px;">
+                    +${(v/1000)}k
+                </button>
+            `).join("");
+        }
+
+        function addQuickCash(amt) {
+            const inp = document.getElementById("cash-received-input");
+            inp.value = Number(inp.value || 0) + amt;
+            calculateChange();
+        }
+
+        function calculateChange() {
+            const subtotal = cart.reduce((sum, it) => sum + (it.price * it.qty), 0);
+            const discPercent = Number(document.getElementById("cart-discount").value || 0);
+            const discVal = Math.round(subtotal * (discPercent / 100));
+            const grandTotal = Math.max(0, subtotal - discVal);
+
+            const received = Number(document.getElementById("cash-received-input").value || 0);
+            const change = Math.max(0, received - grandTotal);
+            document.getElementById("cash-change-val").textContent = formatMoney(change);
+        }
+
+        // Slip Image Upload handling
+        function handleSlipFileChosen(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (ev) => {
+                currentSlipBase64 = ev.target.result;
+                document.getElementById("pay-slip-preview-img").src = currentSlipBase64;
+                document.getElementById("pay-slip-preview-box").style.display = "flex";
+                document.getElementById("btn-del-slip").style.display = "inline-block";
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function removeSlipImage() {
+            currentSlipBase64 = null;
+            document.getElementById("pay-slip-file").value = "";
+            document.getElementById("pay-slip-preview-img").src = "";
+            document.getElementById("pay-slip-preview-box").style.display = "none";
+            document.getElementById("btn-del-slip").style.display = "none";
+        }
+
+        // Confirm Payment and Commit Transaction to SQLite
+        async function confirmPaymentAndComplete() {
+            if (cart.length === 0) return;
+
+            const subtotal = cart.reduce((sum, it) => sum + (it.price * it.qty), 0);
+            const discPercent = Number(document.getElementById("cart-discount").value || 0);
+            const discVal = Math.round(subtotal * (discPercent / 100));
+            const grandTotal = Math.max(0, subtotal - discVal);
+
+            let received = grandTotal;
+            let change = 0;
+            if (paymentMethod === "cash") {
+                received = Number(document.getElementById("cash-received-input").value || grandTotal);
+                change = Math.max(0, received - grandTotal);
+            }
+
+            // Upload slip image to สลิปโอน/ if provided
+            let slipUrl = "";
+            if (currentSlipBase64) {
+                try {
+                    const upRes = await fetch("/api/upload", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ type: "slip", base64: currentSlipBase64 })
+                    });
+                    const upData = await upRes.json();
+                    if (upData.success) slipUrl = upData.url;
+                } catch (e) {}
+            }
+
+            let selectedBankName = "";
+            if (paymentMethod === "bank_transfer") {
+                const selId = document.getElementById("transfer-bank-select").value;
+                const b = bankAccounts.find(x => x.id === selId);
+                selectedBankName = b ? b.bankName : "Bank Transfer";
+            } else if (paymentMethod === "bcel_qr") {
+                selectedBankName = "BCEL One QR";
+            }
+
+            const orderPayload = {
+                id: "INV-" + Date.now().toString().slice(-6),
+                date: new Date().toISOString(),
+                cashier: "Admin",
+                paymentMethod: paymentMethod,
+                bankName: selectedBankName,
+                slipImage: slipUrl,
+                items: cart,
+                subtotal,
+                discountPercent: discPercent,
+                discountAmount: discVal,
+                grandTotal,
+                cashReceived: received,
+                changeDue: change
+            };
+
+            try {
+                const res = await fetch("/api/orders", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(orderPayload)
+                });
+
+                if (res.ok) {
+                    showToast("✅ ຊຳລະເງິນ & ຕັດສະຕັອກສຳເລັດແລ້ວ!", "success");
+                    cart = [];
+                    renderCart();
+                    closePaymentModal();
+                    await loadAllData(); // Re-sync directly with SQLite
+                    showReceiptPreview(orderPayload);
+                } else {
+                    showToast("❌ ເກີດຂໍ້ຜິດພາດໃນການບັນທຶກອໍເດີ້", "danger");
+                }
+            } catch (err) {
+                showToast("❌ ບໍ່ສາມາດເຊື່ອມຕໍ່ກັບເຊີບເວີໄດ້", "danger");
+            }
+        }
+
+        /* ================= THERMAL RECEIPTS & REPRINTS ================= */
+        function showReceiptPreview(order) {
+            const preview = document.getElementById("receipt-screen-preview");
+            const printArea = document.getElementById("receipt-print-area");
+
+            const receiptHtml = generateReceiptHtml(order);
+            preview.innerHTML = receiptHtml;
+            printArea.innerHTML = receiptHtml;
+
+            document.getElementById("receipt-preview-modal").classList.add("open");
+        }
+
+        function closeReceiptPreview() {
+            document.getElementById("receipt-preview-modal").classList.remove("open");
+        }
+
+        function generateReceiptHtml(order) {
+            return `
+                <div style="text-align:center; margin-bottom:10px;">
+                    <div style="display:flex; align-items:center; justify-content:center; gap:8px;">
+                        <img src="/icon-192.png" style="width:34px; height:34px; border-radius:6px; object-fit:cover;">
+                        <span style="font-size:17px; font-weight:900;">${settings.storeName || 'I&hmong-mobile'}</span>
+                    </div>
+                    <div style="font-size:11px; color:#444; margin-top:2px;">${settings.storeAddress || ''}</div>
+                    <div style="font-size:11px; color:#444;">ໂທ: ${settings.storePhone || ''}</div>
+                </div>
+                <div style="border-top:1px dashed #000; border-bottom:1px dashed #000; padding:6px 0; margin-bottom:8px; font-size:11px;">
+                    <div>ເລກບິນ: <b>${order.id}</b></div>
+                    <div>ວັນທີ: ${new Date(order.date).toLocaleString()}</div>
+                    <div>ຜູ້ຂາຍ: ${order.cashier || 'Admin'}</div>
+                    <div>ວິທີຊຳລະ: ${order.paymentMethod.toUpperCase()} ${order.bankName ? `(${order.bankName})` : ''}</div>
+                </div>
+                <table style="width:100%; border-collapse:collapse; font-size:11px; margin-bottom:8px;">
+                    <thead>
+                        <tr style="border-bottom:1px solid #000;">
+                            <th style="text-align:left;">ລາຍການ</th>
+                            <th style="text-align:center;">ຈຳນວນ</th>
+                            <th style="text-align:right;">ລາຄາ</th>
+                            <th style="text-align:right;">ລວມ</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${order.items.map(it => `
+                            <tr>
+                                <td>${it.name}</td>
+                                <td style="text-align:center;">${it.qty}</td>
+                                <td style="text-align:right;">${Number(it.price).toLocaleString()}</td>
+                                <td style="text-align:right;">${Number(it.price * it.qty).toLocaleString()}</td>
+                            </tr>
+                        `).join("")}
+                    </tbody>
+                </table>
+                <div style="border-top:1px dashed #000; padding-top:6px; font-size:11.5px;">
+                    <div style="display:flex; justify-content:space-between;">
+                        <span>ລວມຍ່ອຍ:</span> <span>${formatMoney(order.subtotal)}</span>
+                    </div>
+                    ${order.discountAmount > 0 ? `
+                        <div style="display:flex; justify-content:space-between; color:red;">
+                            <span>ສ່ວນຫຼຸດ (${order.discountPercent}%):</span> <span>-${formatMoney(order.discountAmount)}</span>
+                        </div>
+                    ` : ''}
+                    <div style="display:flex; justify-content:space-between; font-weight:900; font-size:13.5px; border-top:1px solid #000; padding-top:4px; margin-top:4px;">
+                        <span>ຍອດລວມທັງໝົດ:</span> <span>${formatMoney(order.grandTotal)}</span>
+                    </div>
+                    ${order.paymentMethod === 'cash' ? `
+                        <div style="display:flex; justify-content:space-between; font-size:11px; margin-top:2px;">
+                            <span>ຮັບເງິນສົດ:</span> <span>${formatMoney(order.cashReceived)}</span>
+                        </div>
+                        <div style="display:flex; justify-content:space-between; font-size:11px;">
+                            <span>ເງິນທອນ:</span> <span>${formatMoney(order.changeDue)}</span>
+                        </div>
+                    ` : ''}
+                </div>
+                <div style="text-align:center; margin-top:12px; font-size:10.5px; border-top:1px dashed #000; padding-top:6px;">
+                    <div>${settings.receiptFooter || 'ຂອບໃຈທີ່ໃຊ້ບໍລິການ!'}</div>
+                </div>
+            `;
+        }
+
+        function reprintOrderReceipt(orderId) {
+            const o = orders.find(x => x.id === orderId);
+            if (o) showReceiptPreview(o);
+        }
+
+        /* ================= PRODUCT MANAGEMENT ================= */
+        function openProductModal(id = null) {
+            const modal = document.getElementById("product-modal");
+            const title = document.getElementById("product-modal-title");
+
+            initCategoryPills();
+
+            if (id) {
+                const p = products.find(x => x.id === id);
+                if (!p) return;
+                title.textContent = "ແກ້ໄຂສິນຄ້າ / ອາໄຫຼ່";
+                document.getElementById("prod-id").value = p.id;
+                document.getElementById("prod-barcode").value = p.barcode;
+                document.getElementById("prod-category").value = p.category;
+                document.getElementById("prod-name").value = p.name;
+                document.getElementById("prod-cost").value = p.cost;
+                document.getElementById("prod-price").value = p.price;
+                document.getElementById("prod-stock").value = p.stock;
+                document.getElementById("prod-warranty").value = p.warranty || "30 ວັນ";
+                document.getElementById("prod-imei").value = p.imei || "";
+
+                if (p.image) {
+                    document.getElementById("prod-image-val").value = p.image;
+                    document.getElementById("prod-img-preview").src = p.image;
+                    document.getElementById("prod-img-preview-box").style.display = "flex";
+                    document.getElementById("btn-del-prod-img").style.display = "inline-block";
+                } else {
+                    removeProductImage();
+                }
+                const delBtn = document.getElementById("btn-modal-delete-prod");
+                if (delBtn) delBtn.style.display = "inline-block";
+            } else {
+                title.textContent = "ເພີ່ມສິນຄ້າ / ອາໄຫຼ່ໃໝ່";
+                document.getElementById("prod-id").value = "";
+                generateBarcode();
+                document.getElementById("prod-category").value = categories[0] || "ໂທລະສັບມືຖື";
+                document.getElementById("prod-name").value = "";
+                document.getElementById("prod-cost").value = 100000;
+                document.getElementById("prod-price").value = 250000;
+                document.getElementById("prod-stock").value = 5;
+                document.getElementById("prod-warranty").value = "30 ວັນ";
+                document.getElementById("prod-imei").value = "";
+                removeProductImage();
+                const delBtn = document.getElementById("btn-modal-delete-prod");
+                if (delBtn) delBtn.style.display = "none";
+            }
+            modal.classList.add("open");
+        }
+
+        async function deleteProductFromModal() {
+            const id = document.getElementById("prod-id").value;
+            if (!id) return;
+            closeProductModal();
+            await deleteProduct(id);
+        }
+
+        function closeProductModal() {
+            document.getElementById("product-modal").classList.remove("open");
+        }
+
+        function generateBarcode() {
+            document.getElementById("prod-barcode").value = "885" + Math.floor(1000000 + Math.random() * 9000000);
+        }
+
+        let pendingProdImageBase64 = null;
+        function handleProductImageChosen(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (ev) => {
+                pendingProdImageBase64 = ev.target.result;
+                document.getElementById("prod-img-preview").src = pendingProdImageBase64;
+                document.getElementById("prod-img-preview-box").style.display = "flex";
+                document.getElementById("btn-del-prod-img").style.display = "inline-block";
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function removeProductImage() {
+            pendingProdImageBase64 = null;
+            document.getElementById("prod-img-file").value = "";
+            document.getElementById("prod-image-val").value = "";
+            document.getElementById("prod-img-preview").src = "";
+            document.getElementById("prod-img-preview-box").style.display = "none";
+            document.getElementById("btn-del-prod-img").style.display = "none";
+        }
+
+        async function handleSaveProduct(e) {
+            e.preventDefault();
+            const id = document.getElementById("prod-id").value;
+            const barcode = document.getElementById("prod-barcode").value.trim();
+            const category = document.getElementById("prod-category").value;
+            const name = document.getElementById("prod-name").value.trim();
+            const cost = Number(document.getElementById("prod-cost").value);
+            const price = Number(document.getElementById("prod-price").value);
+            const stock = Number(document.getElementById("prod-stock").value);
+            const warranty = document.getElementById("prod-warranty").value.trim();
+            const imei = document.getElementById("prod-imei").value.trim();
+            let imageUrl = document.getElementById("prod-image-val").value;
+
+            // Upload new image if chosen
+            if (pendingProdImageBase64) {
+                try {
+                    const upRes = await fetch("/api/upload", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ type: "product", base64: pendingProdImageBase64 })
+                    });
+                    const upData = await upRes.json();
+                    if (upData.success) imageUrl = upData.url;
+                } catch (err) {}
+            }
+
+            const payload = { barcode, category, name, cost, price, stock, warranty, imei, image: imageUrl };
+
+            try {
+                if (id) {
+                    await fetch(`/api/products/${id}`, {
+                        method: "PUT",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify(payload)
+                    });
+                    showToast("✅ ແກ້ໄຂສິນຄ້າຮຽບຮ້ອຍແລ້ວ!", "success");
+                } else {
+                    await fetch("/api/products", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify(payload)
+                    });
+                    showToast("✅ ເພີ່ມສິນຄ້າໃໝ່ສຳເລັດແລ້ວ!", "success");
+                }
+                closeProductModal();
+                await syncProductsOnly();
+            } catch (err) {
+                showToast("❌ ບໍ່ສາມາດບັນທຶກສິນຄ້າໄດ້", "danger");
+            }
+        }
+
+        async function deleteProduct(id) {
+            if (confirm("ທ່ານແນ່ໃຈບໍ່ວ່າຕ້ອງການລົບສິນຄ້ານີ້?")) {
+                try {
+                    const res = await fetch(`/api/products/${encodeURIComponent(id)}`, { method: "DELETE" });
+                    if (res.ok) {
+                        showToast("ລຶບສິນຄ້າສຳເລັດແລ້ວ", "info");
+                        products = products.filter(p => p.id !== id);
+                        renderPosProducts();
+                        renderInventoryTable();
+                    } else {
+                        showToast("❌ ບໍ່ສາມາດລຶບສິນຄ້າໄດ້", "danger");
+                    }
+                    await syncProductsOnly();
+                } catch (e) {
+                    showToast("❌ ເກີດຂໍ້ຜິດພາດໃນການລຶບ", "danger");
+                }
+            }
+        }
+
+        /* ================= INVENTORY TABLE ================= */
+        function renderInventoryTable() {
+            const q = (document.getElementById("inv-search").value || "").toLowerCase().trim();
+            const cat = document.getElementById("inv-cat-filter").value;
+            const tbody = document.getElementById("inventory-table-body");
+            const isBackend = document.getElementById("mode-btn-backend").classList.contains("active");
+
+            let filtered = products.filter(p => {
+                const matchCat = (cat === "all" || p.category === cat);
+                const matchQ = p.name.toLowerCase().includes(q) || p.barcode.includes(q) || (p.imei && p.imei.includes(q));
+                return matchCat && matchQ;
+            });
+
+            // KPIs
+            const totalItems = products.length;
+            const totalRetailVal = products.reduce((s, p) => s + (p.price * p.stock), 0);
+            const totalCostVal = products.reduce((s, p) => s + ((p.cost || 0) * p.stock), 0);
+            const lowStockCount = products.filter(p => p.stock > 0 && p.stock <= 3).length;
+            const outStockCount = products.filter(p => p.stock === 0).length;
+
+            document.getElementById("inv-count-total").textContent = totalItems;
+            document.getElementById("inv-val-total").textContent = formatMoney(totalRetailVal);
+            document.getElementById("inv-cost-total").textContent = formatMoney(totalCostVal);
+            document.getElementById("inv-count-low").textContent = lowStockCount;
+            document.getElementById("inv-count-out").textContent = outStockCount;
+
+            if (filtered.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; padding:30px; color:var(--text-subtle);">ບໍ່ພົບສິນຄ້າ</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = filtered.map(p => `
+                <tr>
+                    <td>
+                        ${p.image ? `<img src="${p.image}" class="table-thumb" onclick="openLightbox('${p.image}', '${p.name}')">` : `<div class="table-thumb" style="display:flex;align-items:center;justify-content:center;background:#f1f5f9;">📱</div>`}
+                    </td>
+                    <td>
+                        <div style="font-weight:700;">${p.name}</div>
+                        <div style="font-size:10.5px; color:var(--text-muted); font-family:monospace;">${p.barcode} ${p.imei ? `• IMEI: ${p.imei}` : ''}</div>
+                    </td>
+                    <td><span style="font-size:11px; background:#f1f5f9; padding:2px 6px; border-radius:4px; font-weight:700;">${p.category}</span></td>
+                    <td style="text-align:right; font-family:monospace; color:#64748b;">
+                        ${isBackend ? formatMoney(p.cost) : '•••'}
+                    </td>
+                    <td style="text-align:right; font-family:monospace; font-weight:800; color:var(--primary);">${formatMoney(p.price)}</td>
+                    <td style="text-align:center;">
+                        <span style="font-weight:800; padding:2px 8px; border-radius:12px; font-size:11px; ${p.stock <= 0 ? 'background:#fee2e2; color:#b91c1c;' : (p.stock <= 3 ? 'background:#fef3c7; color:#b45309;' : 'background:#dcfce7; color:#15803d;')}">
+                            ${p.stock}
+                        </span>
+                    </td>
+                    <td style="text-align:center; font-size:11px;">${p.warranty || '30 ວັນ'}</td>
+                    <td style="text-align:center; white-space:nowrap;">
+                        <button onclick="openProductModal('${p.id}')" style="background:#f1f5f9; border:1px solid #cbd5e1; padding:4px 8px; border-radius:6px; cursor:pointer;">✏️</button>
+                        <button onclick="deleteProduct('${p.id}')" style="background:#fee2e2; border:1px solid #fca5a5; padding:4px 8px; border-radius:6px; cursor:pointer; margin-left:4px;">🗑️</button>
+                    </td>
+                </tr>
+            `).join("");
+        }
+
+        /* ================= REPAIR MANAGEMENT ================= */
+        function openNewRepairModal(id = null) {
+            const modal = document.getElementById("repair-modal");
+            const title = document.getElementById("repair-modal-title");
+            activeRepairPhotos = [];
+
+            if (id) {
+                const r = repairs.find(x => x.id === id);
+                if (!r) return;
+                title.textContent = `ແກ້ໄຂບິນສ້ອມ (${r.id})`;
+                document.getElementById("rep-id").value = r.id;
+                document.getElementById("rep-cust-name").value = r.customerName;
+                document.getElementById("rep-cust-phone").value = r.customerPhone;
+                document.getElementById("rep-device-model").value = r.deviceModel;
+                document.getElementById("rep-imei").value = r.imei || "";
+                document.getElementById("rep-passcode").value = r.passcode || "";
+                document.getElementById("rep-status").value = r.status || "pending";
+                document.getElementById("rep-issue").value = r.issue;
+                document.getElementById("rep-estimated-price").value = r.estimatedPrice || 0;
+                document.getElementById("rep-actual-price").value = r.actualPrice || r.estimatedPrice || 0;
+                document.getElementById("rep-technician-note").value = r.technicianNote || "";
+
+                activeRepairPhotos = Array.isArray(r.images) ? [...r.images] : [];
+            } else {
+                title.textContent = "ເປີດບິນຮັບສ້ອມແປງມືຖືໃໝ່";
+                document.getElementById("rep-id").value = "";
+                document.getElementById("rep-cust-name").value = "";
+                document.getElementById("rep-cust-phone").value = "";
+                document.getElementById("rep-device-model").value = "";
+                document.getElementById("rep-imei").value = "";
+                document.getElementById("rep-passcode").value = "";
+                document.getElementById("rep-status").value = "pending";
+                document.getElementById("rep-issue").value = "";
+                document.getElementById("rep-estimated-price").value = 0;
+                document.getElementById("rep-actual-price").value = 0;
+                document.getElementById("rep-technician-note").value = "";
+            }
+
+            renderRepairPhotosGallery();
+            modal.classList.add("open");
+        }
+
+        function closeRepairModal() {
+            document.getElementById("repair-modal").classList.remove("open");
+        }
+
+        // Multi-image upload for repair condition photos
+        async function handleRepairPhotosChosen(e) {
+            const files = Array.from(e.target.files);
+            for (const file of files) {
+                const reader = new FileReader();
+                reader.onload = async (ev) => {
+                    const base64 = ev.target.result;
+                    try {
+                        const upRes = await fetch("/api/upload", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({ type: "repair", base64 })
+                        });
+                        const upData = await upRes.json();
+                        if (upData.success) {
+                            activeRepairPhotos.push(upData.url);
+                            renderRepairPhotosGallery();
+                        }
+                    } catch (err) {}
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function renderRepairPhotosGallery() {
+            const container = document.getElementById("rep-photos-gallery");
+            container.innerHTML = activeRepairPhotos.map((url, idx) => `
+                <div class="gallery-thumb-item">
+                    <img src="${url}" onclick="openLightbox('${url}', 'ຮູບສະພາບເຄື່ອງ')">
+                    <button type="button" onclick="removeRepairPhoto(${idx})" class="btn-del-thumb">✕</button>
+                </div>
+            `).join("");
+        }
+
+        function removeRepairPhoto(idx) {
+            activeRepairPhotos.splice(idx, 1);
+            renderRepairPhotosGallery();
+        }
+
+        async function handleSaveRepair(e) {
+            e.preventDefault();
+            const id = document.getElementById("rep-id").value;
+            const customerName = document.getElementById("rep-cust-name").value.trim();
+            const customerPhone = document.getElementById("rep-cust-phone").value.trim();
+            const deviceModel = document.getElementById("rep-device-model").value.trim();
+            const imei = document.getElementById("rep-imei").value.trim();
+            const passcode = document.getElementById("rep-passcode").value.trim();
+            const status = document.getElementById("rep-status").value;
+            const issue = document.getElementById("rep-issue").value.trim();
+            const estimatedPrice = Number(document.getElementById("rep-estimated-price").value || 0);
+            const actualPrice = Number(document.getElementById("rep-actual-price").value || estimatedPrice);
+            const technicianNote = document.getElementById("rep-technician-note").value.trim();
+
+            const payload = {
+                customerName, customerPhone, deviceModel, imei, passcode,
+                status, issue, estimatedPrice, actualPrice, technicianNote,
+                images: activeRepairPhotos
+            };
+
+            try {
+                if (id) {
+                    await fetch(`/api/repairs/${id}`, {
+                        method: "PUT",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify(payload)
+                    });
+                    showToast("✅ ອັບເດດບິນສ້ອມຮຽບຮ້ອຍແລ້ວ!", "success");
+                } else {
+                    await fetch("/api/repairs", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify(payload)
+                    });
+                    showToast("✅ ເປີດບິນຮັບສ້ອມສຳເລັດແລ້ວ!", "success");
+                }
+                closeRepairModal();
+                await loadAllData();
+            } catch (err) {
+                showToast("❌ ບໍ່ສາມາດບັນທຶກບິນສ້ອມໄດ້", "danger");
+            }
+        }
+
+        function setRepairFilter(status) {
+            selectedRepairFilter = status;
+            document.querySelectorAll("#repair-filter-bar button").forEach(b => b.classList.remove("active"));
+            const active = document.getElementById("rf-" + status);
+            if (active) active.classList.add("active");
+            renderRepairsTable();
+        }
+
+        function renderRepairsTable() {
+            const tbody = document.getElementById("repair-table-body");
+
+            let filtered = repairs;
+            if (selectedRepairFilter !== 'all') {
+                filtered = repairs.filter(r => r.status === selectedRepairFilter);
+            }
+
+            // KPIs
+            const total = repairs.length;
+            const inProg = repairs.filter(r => r.status === 'in_progress').length;
+            const waiting = repairs.filter(r => r.status === 'waiting_parts').length;
+            const completed = repairs.filter(r => r.status === 'completed' || r.status === 'delivered').length;
+            const totalRev = repairs.reduce((sum, r) => sum + (r.actualPrice || r.estimatedPrice || 0), 0);
+
+            document.getElementById("rep-kpi-total").textContent = total;
+            document.getElementById("rep-kpi-in-progress").textContent = inProg;
+            document.getElementById("rep-kpi-waiting").textContent = waiting;
+            document.getElementById("rep-kpi-completed").textContent = completed;
+            document.getElementById("rep-kpi-revenue").textContent = formatMoney(totalRev);
+
+            if (filtered.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="9" style="text-align:center; padding:30px; color:var(--text-subtle);">ບໍ່ພົບລາຍການງານສ້ອມ</td></tr>`;
+                return;
+            }
+
+            const statusColors = {
+                pending: { bg: '#fef3c7', text: '#b45309', label: '🟡 ຮັບເຄື່ອງແລ້ວ' },
+                in_progress: { bg: '#eff6ff', text: '#1d4ed8', label: '🔵 ກຳລັງສ້ອມ' },
+                waiting_parts: { bg: '#ffedd5', text: '#c2410c', label: '🟠 ລໍຖ້າອາໄຫຼ່' },
+                completed: { bg: '#dcfce7', text: '#15803d', label: '🟢 ສ້ອມແລ້ວ' },
+                delivered: { bg: '#f3e8ff', text: '#7e22ce', label: '🟣 ສົ່ງມອບແລ້ວ' }
+            };
+
+            tbody.innerHTML = filtered.map(r => {
+                const st = statusColors[r.status] || { bg: '#f1f5f9', text: '#475569', label: r.status };
+                const imgs = Array.isArray(r.images) ? r.images : [];
+                return `
+                    <tr>
+                        <td style="font-family:monospace; font-weight:800; color:var(--primary);">${r.id}</td>
+                        <td style="font-size:11px; color:var(--text-muted);">${new Date(r.date).toLocaleDateString()}</td>
+                        <td>
+                            <div style="font-weight:700;">${r.customerName}</div>
+                            <div style="font-size:11px; color:#2563eb;"><a href="tel:${r.customerPhone}" style="color:inherit; text-decoration:none;">📞 ${r.customerPhone}</a></div>
+                        </td>
+                        <td>
+                            <div style="font-weight:700;">${r.deviceModel}</div>
+                            <div style="font-size:10.5px; color:var(--text-muted); font-family:monospace;">IMEI: ${r.imei || '-'} ${r.passcode ? `• Pass: ${r.passcode}` : ''}</div>
+                        </td>
+                        <td style="max-width:180px; font-size:12px;">${r.issue}</td>
+                        <td>
+                            <div style="display:flex; gap:4px; flex-wrap:wrap;">
+                                ${imgs.slice(0, 3).map(img => `
+                                    <img src="${img}" class="table-thumb" style="width:32px; height:32px;" onclick="openLightbox('${img}', 'ຮູບສະພາບເຄື່ອງ (${r.id})')">
+                                `).join("")}
+                                ${imgs.length > 3 ? `<span style="font-size:10px; font-weight:800; align-self:center;">+${imgs.length - 3}</span>` : ''}
+                                ${imgs.length === 0 ? `<span style="color:#94a3b8; font-size:11px;">ບໍ່ມີຮູບ</span>` : ''}
+                            </div>
+                        </td>
+                        <td style="text-align:right; font-family:monospace; font-weight:800;">
+                            <div>${formatMoney(r.actualPrice || r.estimatedPrice)}</div>
+                        </td>
+                        <td style="text-align:center;">
+                            <span style="font-size:11px; font-weight:800; background:${st.bg}; color:${st.text}; padding:3px 8px; border-radius:12px;">
+                                ${st.label}
+                            </span>
+                        </td>
+                        <td style="text-align:center; white-space:nowrap;">
+                            <button onclick="openNewRepairModal('${r.id}')" style="background:#f1f5f9; border:1px solid #cbd5e1; padding:4px 8px; border-radius:6px; cursor:pointer;" title="Edit">✏️</button>
+                            <button onclick="checkoutRepairToPos('${r.id}')" style="background:#dcfce7; border:1px solid #86efac; padding:4px 8px; border-radius:6px; cursor:pointer; margin-left:4px;" title="ສົ່ງເຂົ້າກະຕ່າ POS">🛒</button>
+                            <button onclick="deleteRepairJob('${r.id}')" style="background:#fee2e2; border:1px solid #fca5a5; padding:4px 8px; border-radius:6px; cursor:pointer; margin-left:4px;" title="Delete">🗑️</button>
+                        </td>
+                    </tr>
+                `;
+            }).join("");
+        }
+
+        function updateRepairBadge() {
+            const pendingCount = repairs.filter(r => r.status === 'in_progress' || r.status === 'waiting_parts').length;
+            const badge = document.getElementById("nav-repairs-badge");
+            if (badge) badge.textContent = pendingCount;
+        }
+
+        async function deleteRepairJob(id) {
+            if (confirm("ທ່ານແນ່ໃຈບໍ່ວ່າຕ້ອງການລົບງານສ້ອມນີ້?")) {
+                try {
+                    await fetch(`/api/repairs/${id}`, { method: "DELETE" });
+                    showToast("ລຶບງານສ້ອມສຳເລັດແລ້ວ", "info");
+                    await loadAllData();
+                } catch (e) {}
+            }
+        }
+
+        function checkoutRepairToPos(repId) {
+            const r = repairs.find(x => x.id === repId);
+            if (!r) return;
+            cart.push({
+                id: r.id,
+                name: `ຄ່າສ້ອມ ${r.deviceModel} (${r.issue})`,
+                price: r.actualPrice || r.estimatedPrice || 0,
+                cost: 0,
+                category: "ຄ່າບໍລິການສ້ອມ",
+                qty: 1
+            });
+            switchTab("pos");
+            renderCart();
+            showToast(`🛒 ສົ່ງງານສ້ອມ ${r.id} ເຂົ້າກະຕ່າຂາຍແລ້ວ!`, "success");
+        }
+
+        /* ================= REPORTS & ANALYTICS ================= */
+        function setReportPeriod(p) {
+            reportPeriod = p;
+            document.querySelectorAll(".date-pill").forEach(el => el.classList.remove("active"));
+            const pill = document.getElementById("dp-" + p);
+            if (pill) pill.classList.add("active");
+
+            const today = new Date();
+            const fromInput = document.getElementById("rep-date-from");
+            const toInput = document.getElementById("rep-date-to");
+
+            if (p === 'today') {
+                const s = today.toISOString().slice(0, 10);
+                fromInput.value = s;
+                toInput.value = s;
+            } else if (p === 'month') {
+                const y = today.getFullYear();
+                const m = String(today.getMonth() + 1).padStart(2, '0');
+                fromInput.value = `${y}-${m}-01`;
+                toInput.value = today.toISOString().slice(0, 10);
+            } else if (p === 'year') {
+                const y = today.getFullYear();
+                fromInput.value = `${y}-01-01`;
+                toInput.value = today.toISOString().slice(0, 10);
+            } else if (p === 'all_time') {
+                fromInput.value = "2020-01-01";
+                toInput.value = today.toISOString().slice(0, 10);
+            }
+
+            renderReports();
+        }
+
+        function applyCustomDateRange() {
+            reportPeriod = "custom";
+            document.querySelectorAll(".date-pill").forEach(el => el.classList.remove("active"));
+            renderReports();
+        }
+
+        async function renderReports() {
+            const from = document.getElementById("rep-date-from")?.value || "";
+            const to = document.getElementById("rep-date-to")?.value || "";
+
+            try {
+                let url = "/api/reports";
+                if (from && to) {
+                    url += `?from=${encodeURIComponent(from)}&to=${encodeURIComponent(to)}`;
+                }
+                const res = await fetch(url);
+                if (!res.ok) return;
+                const data = await res.json();
+
+                // Dynamic KPIs
+                document.getElementById("rep-kpi-pos").textContent = formatMoney(data.summary.totalPosSales);
+                document.getElementById("rep-kpi-rep").textContent = formatMoney(data.summary.totalRepairRevenue);
+                document.getElementById("rep-kpi-total-rev").textContent = formatMoney(data.summary.totalRevenue);
+                document.getElementById("rep-kpi-profit").textContent = formatMoney(data.summary.totalProfit);
+
+                // Orders History Table
+                const tbodyOrders = document.getElementById("orders-table-body");
+                tbodyOrders.innerHTML = orders.map(o => `
+                    <tr>
+                        <td style="font-family:monospace; font-weight:800; color:var(--primary);">${o.id}</td>
+                        <td style="font-size:11.5px; color:var(--text-muted);">${new Date(o.date).toLocaleString()}</td>
+                        <td>${o.cashier || 'Admin'}</td>
+                        <td style="font-size:12px;">${o.items.map(it => `${it.name} (${it.qty})`).join(", ")}</td>
+                        <td>
+                            <span style="font-size:10px; font-weight:700; padding:2px 6px; border-radius:4px; ${o.paymentMethod === 'cash' ? 'background:#dcfce7; color:#15803d;' : 'background:#eff6ff; color:#1d4ed8;'}">
+                                ${o.paymentMethod.toUpperCase()} ${o.bankName ? `(${o.bankName})` : ''}
+                            </span>
+                        </td>
+                        <td>
+                            ${o.slipImage ? `
+                                <button onclick="openLightbox('${o.slipImage}', 'ສະລິບໂອນເງິນ (${o.id})')" style="background:#eff6ff; border:1px solid #93c5fd; color:#1d4ed8; padding:2px 8px; border-radius:6px; font-size:11px; font-weight:700; cursor:pointer;">
+                                    📸 ເບິ່ງສະລິບ
+                                </button>
+                            ` : `<span style="color:#94a3b8; font-size:11px;">ບໍ່ມີສະລິບ</span>`}
+                        </td>
+                        <td style="text-align:right; font-weight:800; font-family:monospace;">${formatMoney(o.grandTotal)}</td>
+                        <td style="text-align:center;">
+                            <button onclick="reprintOrderReceipt('${o.id}')" style="background:#f1f5f9; border:1px solid #cbd5e1; padding:4px 8px; border-radius:6px; cursor:pointer;" title="Reprint">🖨️</button>
+                        </td>
+                    </tr>
+                `).join("");
+
+                // Top 100 Best Sellers Table
+                const tbodyTop = document.getElementById("top-sellers-table-body");
+                tbodyTop.innerHTML = data.topSellers.map((item, idx) => `
+                    <tr>
+                        <td style="font-weight:800; text-align:center;">#${idx + 1}</td>
+                        <td><b>${item.name}</b> <span style="font-size:10px; color:#64748b;">(${item.category})</span></td>
+                        <td style="text-align:center; font-weight:800; color:var(--primary);">${item.qtySold}</td>
+                        <td style="text-align:right; font-family:monospace; font-weight:800;">${formatMoney(item.totalRevenue)}</td>
+                    </tr>
+                `).join("");
+
+                // Dead Stock Table
+                const tbodyDead = document.getElementById("dead-stock-table-body");
+                tbodyDead.innerHTML = data.deadStock.map(p => `
+                    <tr>
+                        <td><b>${p.name}</b></td>
+                        <td style="text-align:center; font-weight:800; color:var(--danger);">${p.stock}</td>
+                        <td style="text-align:center;">${p.qtySold || 0}</td>
+                        <td style="text-align:right; font-family:monospace; font-weight:800;">${formatMoney(p.stuckValue)}</td>
+                    </tr>
+                `).join("");
+
+            } catch (err) {}
+        }
+
+        async function confirmClearSalesHistory() {
+            if (confirm("⚠️ ທ່ານແນ່ໃຈບໍ່ວ່າຕ້ອງການລ້າງປະຫວັດການຂາຍທັງໝົດ?\n(ສະຕັອກສິນຄ້າຈະບໍ່ໄດ້ຮັບຜົນກະທົບ)")) {
+                try {
+                    const res = await fetch("/api/orders/clear", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ confirm: true })
+                    });
+                    if (res.ok) {
+                        showToast("ລ້າງປະຫວັດການຂາຍຮຽບຮ້ອຍແລ້ວ", "info");
+                        orders = [];
+                        renderReports();
+                    }
+                } catch (e) {}
+            }
+        }
+
+        /* ================= LIGHTBOX (FULL PHOTO VIEW) ================= */
+        function openLightbox(imgUrl, title = "ຮູບພາບ") {
+            document.getElementById("lightbox-img").src = imgUrl;
+            document.getElementById("lightbox-title").textContent = title;
+            document.getElementById("lightbox-modal").classList.add("open");
+        }
+
+        function closeLightbox() {
+            document.getElementById("lightbox-modal").classList.remove("open");
+        }
+
+        /* ================= BACKUPS & LOCAL STORAGE ================= */
+        async function createDatabaseBackup() {
+            try {
+                const res = await fetch("/api/backup", { method: "POST" });
+                const data = await res.json();
+                if (data.success) {
+                    showToast(`✅ ສຳຮອງຖານຂໍ້ມູນສຳເລັດ: ${data.filename}`, "success");
+                    loadBackupsList();
+                }
+            } catch (e) {
+                showToast("❌ ບໍ່ສາມາດສຳຮອງຂໍ້ມູນໄດ້", "danger");
+            }
+        }
+
+        async function loadBackupsList() {
+            const tbody = document.getElementById("backups-table-body");
+            if (!tbody) return;
+            try {
+                const res = await fetch("/api/backups");
+                if (res.ok) {
+                    backups = await res.json();
+                    tbody.innerHTML = backups.map(b => `
+                        <tr>
+                            <td style="font-family:monospace; font-weight:700;">${b.filename}</td>
+                            <td>${(b.size / 1024).toFixed(1)} KB</td>
+                            <td style="font-size:11px; color:#64748b;">${new Date(b.createdAt).toLocaleString()}</td>
+                            <td style="text-align:center;">
+                                <button onclick="restoreBackup('${b.filename}')" style="background:#eff6ff; border:1px solid #93c5fd; color:#1d4ed8; padding:3px 8px; border-radius:6px; font-weight:700; cursor:pointer;">
+                                    🔄 ກູ້ຄືນ
+                                </button>
+                            </td>
+                        </tr>
+                    `).join("");
+                }
+            } catch (e) {}
+        }
+
+        async function restoreBackup(filename) {
+            if (confirm(`ທ່ານແນ່ໃຈບໍ່ວ່າຕ້ອງການກູ້ຄືນຖານຂໍ້ມູນຈາກໄຟລ໌ "${filename}"?`)) {
+                try {
+                    const res = await fetch("/api/restore", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ filename })
+                    });
+                    if (res.ok) {
+                        alert("ກູ້ຄືນຖານຂໍ້ມູນສຳເລັດແລ້ວ! ກະລຸນາກົດ OK ເພື່ອໂຫຼດລະບົບໃໝ່");
+                        location.reload();
+                    }
+                } catch (e) {}
+            }
+        }
+
+        /* ================= CATEGORY MANAGEMENT ================= */
+        function openCategoryModal() {
+            renderCategoryListInModal();
+            document.getElementById("category-modal").classList.add("open");
+        }
+
+        function closeCategoryModal() {
+            document.getElementById("category-modal").classList.remove("open");
+        }
+
+        function renderCategoryListInModal() {
+            const box = document.getElementById("category-list-box");
+            box.innerHTML = categories.map(cat => `
+                <div style="display:flex; justify-content:space-between; align-items:center; background:#f8fafc; padding:6px 10px; border-radius:6px; border:1px solid #e2e8f0; font-size:12px;">
+                    <span style="font-weight:700;">${cat}</span>
+                    <button onclick="deleteCategory('${cat}')" style="background:none; border:none; color:var(--danger); cursor:pointer; font-weight:800;">✕</button>
+                </div>
+            `).join("");
+        }
+
+        async function addNewCategory() {
+            const inp = document.getElementById("new-cat-name-input");
+            const name = inp.value.trim();
+            if (!name) return;
+
+            try {
+                const res = await fetch("/api/categories", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ name })
+                });
+                if (res.ok) {
+                    categories.push(name);
+                    inp.value = "";
+                    renderCategoryListInModal();
+                    initCategoryPills();
+                    showToast("ເພີ່ມໝວດໝູ່ສຳເລັດ!", "success");
+                }
+            } catch (e) {}
+        }
+
+        async function deleteCategory(catName) {
+            if (confirm(`ລຶບໝວດໝູ່ "${catName}"?`)) {
+                categories = categories.filter(c => c !== catName);
+                renderCategoryListInModal();
+                initCategoryPills();
+            }
+        }
+
+        /* ================= BANK MANAGEMENT ================= */
+        function openAddBankModal() {
+            document.getElementById("bank-modal").classList.add("open");
+        }
+        function closeBankModal() {
+            document.getElementById("bank-modal").classList.remove("open");
+        }
+
+        async function handleSaveBank(e) {
+            e.preventDefault();
+            const bankName = document.getElementById("bank-name-input").value.trim();
+            const accountNumber = document.getElementById("bank-acc-num-input").value.trim();
+            const accountName = document.getElementById("bank-acc-name-input").value.trim();
+
+            try {
+                const res = await fetch("/api/banks", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ bankName, accountNumber, accountName })
+                });
+                if (res.ok) {
+                    showToast("ເພີ່ມບັນຊີທະນາຄານສຳເລັດ!", "success");
+                    closeBankModal();
+                    await loadAllData();
+                }
+            } catch (e) {}
+        }
+
+        function renderBankAccountsList() {
+            const tbody = document.getElementById("banks-table-body");
+            if (!tbody) return;
+            tbody.innerHTML = bankAccounts.map(b => `
+                <tr>
+                    <td><b>${b.bankName}</b></td>
+                    <td style="font-family:monospace; font-weight:800;">${b.accountNumber}</td>
+                    <td>${b.accountName}</td>
+                    <td style="text-align:center;">
+                        <button onclick="deleteBankAccount('${b.id}')" style="background:#fee2e2; border:1px solid #fca5a5; padding:2px 8px; border-radius:6px; cursor:pointer;">🗑️</button>
+                    </td>
+                </tr>
+            `).join("");
+        }
+
+        async function deleteBankAccount(id) {
+            if (confirm("ລຶບບັນຊີນີ້?")) {
+                try {
+                    await fetch(`/api/banks/${id}`, { method: "DELETE" });
+                    await loadAllData();
+                } catch (e) {}
+            }
+        }
+
+        /* ================= STORE SETTINGS ================= */
+        async function saveStoreSettings(e) {
+            e.preventDefault();
+            const storeName = document.getElementById("setting-store-name").value.trim();
+            const storePhone = document.getElementById("setting-store-phone").value.trim();
+            const storeAddress = document.getElementById("setting-store-address").value.trim();
+            const receiptFooter = document.getElementById("setting-receipt-footer").value.trim();
+
+            const payload = { storeName, storePhone, storeAddress, receiptFooter };
+            try {
+                await fetch("/api/settings", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(payload)
+                });
+                settings = { ...settings, ...payload };
+                showToast("✅ ບັນທຶກຂໍ້ມູນຮ້ານຮຽບຮ້ອຍແລ້ວ!", "success");
+            } catch (e) {}
+        }
+
+        /* ================= PWA INSTALLATION TRIGGER ================= */
+        let deferredInstallPrompt = null;
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredInstallPrompt = e;
+            const btn = document.getElementById('btn-pwa-install');
+            if (btn) btn.style.display = 'inline-flex';
+        });
+
+        
+        /* ================= INSTALL APP & QR CODE MODAL ================= */
+        async function openInstallQrModal(initialTab = 'mobile') {
+            switchInstallTab(initialTab);
+            try {
+                const res = await fetch("/api/info");
+                const data = await res.json();
+                const scannerUrl = data.scannerUrl || ("http://" + (window.location.hostname || "172.30.1.74") + ":3000/scanner");
+                document.getElementById("install-mobile-url-text").textContent = scannerUrl;
+                document.getElementById("install-mobile-qr-img").src = "https://api.qrserver.com/v1/create-qr-code/?size=280x280&data=" + encodeURIComponent(scannerUrl);
+            } catch (e) {}
+            document.getElementById("install-qr-modal").classList.add("open");
+        }
+
+        function closeInstallQrModal() {
+            document.getElementById("install-qr-modal").classList.remove("open");
+        }
+
+        function switchInstallTab(tab) {
+            document.getElementById("btn-tab-inst-mobile").classList.toggle("active", tab === 'mobile');
+            document.getElementById("btn-tab-inst-desktop").classList.toggle("active", tab === 'desktop');
+            document.getElementById("install-view-mobile").style.display = tab === 'mobile' ? "block" : "none";
+            document.getElementById("install-view-desktop").style.display = tab === 'desktop' ? "block" : "none";
+        }
+
+        function copyInstallLink() {
+            const text = document.getElementById("install-mobile-url-text").textContent;
+            navigator.clipboard.writeText(text);
+            showToast("ຄັດລອກລິ້ງສຳເລັດແລ້ວ!", "info");
+        }
+
+        function promptDesktopInstall() {
+            if (deferredInstallPrompt) {
+                deferredInstallPrompt.prompt();
+                deferredInstallPrompt = null;
+            } else {
+                alert("ໃນ Google Chrome: ໃຫ້ສັງເກດປຸ່ມຕິດຕັ້ງ (ຮູບຈໍຄອມ) ຢູ່ແຖບ URL ຂວາສຸດ ຫຼື ຄລິກເມນູ 3 ຈຸດ > Save and share > Install I&hmong-mobile");
+            }
+        }
+
+        function triggerPwaInstall() {
+            if (deferredInstallPrompt) {
+                deferredInstallPrompt.prompt();
+                deferredInstallPrompt.userChoice.then(() => {
+                    deferredInstallPrompt = null;
+                });
+            } else {
+                alert('📌 ວິທີຕິດຕັ້ງ I&hmong-mobile ເປັນແອັບເທິງ Mac:\n\n' +
+                      '💻 Google Chrome:\n' +
+                      '1. ສັງເກດປຸ່ມ "ຕິດຕັ້ງແອັບ" (ຮູບຈໍຄອມພິວເຕີມີລູກສອນລົງ) ຢູ່ແຖບ URL ຂວາສຸດ\n' +
+                      '2. ຫຼື ຄລິກປຸ່ມ 3 ຈຸດ > ເລືອກ "Save and share" > "Install I&hmong-mobile"\n\n' +
+                      '🍏 Safari:\n' +
+                      '1. ຄລິກເມນູ File ເທິງສຸດຂອງຈໍ Mac > ເລືອກ "Add to Dock..."');
+            }
+        }
+
+        /* ================= BARCODE CAMERA SCANNER ================= */
+        let scanTargetMode = 'pos';
+        function openBarcodeScanner(target = 'pos') {
+            scanTargetMode = target;
+            document.getElementById("scanner-modal").classList.add("open");
+            html5QrCode = new Html5Qrcode("reader");
+            html5QrCode.start(
+                { facingMode: "environment" },
+                { fps: 10, qrbox: { width: 220, height: 220 } },
+                (decodedText) => {
+                    closeBarcodeScanner();
+                    if (scanTargetMode === 'pos') {
+                        document.getElementById("pos-search").value = decodedText;
+                        renderPosProducts();
+                        const match = products.find(p => p.barcode === decodedText || p.imei === decodedText);
+                        if (match) addToCart(match.id);
+                    }
+                },
+                () => {}
+            ).catch(() => {});
+        }
+
+        function closeBarcodeScanner() {
+            if (html5QrCode) {
+                html5QrCode.stop().then(() => html5QrCode.clear()).catch(() => {});
+            }
+            document.getElementById("scanner-modal").classList.remove("open");
+        }
+
+        async function openPhoneConnectModal() {
+            try {
+                const res = await fetch("/api/info");
+                const data = await res.json();
+                const scannerUrl = data.scannerUrl || "http://172.30.1.58:3000/scanner";
+                document.getElementById("modal-phone-url-text").textContent = scannerUrl;
+                document.getElementById("modal-phone-qr-img").src = "https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=" + encodeURIComponent(scannerUrl);
+            } catch(e) {}
+            document.getElementById("phone-connect-modal").classList.add("open");
+        }
+        function closePhoneConnectModal() {
+            document.getElementById("phone-connect-modal").classList.remove("open");
+        }
+
+        function openStockDeductModal() {
+            const code = prompt("ກະລຸນາໃສ່ບາໂຄດ ຫຼື IMEI ທີ່ຕ້ອງການຕັດສະຕັອກ:");
+            if (!code) return;
+            const p = products.find(x => x.barcode === code.trim() || x.imei === code.trim());
+            if (!p) {
+                alert("ບໍ່ພົບສິນຄ້າ!");
+                return;
+            }
+            const qty = prompt(`ຕັດສະຕັອກ "${p.name}" (ປັດຈຸບັນມີ ${p.stock}):\nໃສ່ຈຳນວນທີ່ຕ້ອງການຕັດ:`, "1");
+            if (!qty || isNaN(qty)) return;
+
+            fetch("/api/stock/adjust", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ productId: p.id, qty: Number(qty), reason: "ຕັດສະຕັອກດ່ວນໜ້າຮ້ານ" })
+            }).then(() => {
+                showToast(`ຕັດສະຕັອກ "${p.name}" ຮຽບຮ້ອຍແລ້ວ!`, "success");
+                syncProductsOnly();
+            });
+        }
+    </script>
+</body>
+</html>
