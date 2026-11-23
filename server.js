@@ -19,28 +19,34 @@ function getLocalIp() {
 
 const PORT = 3000;
 
-// ================= LOCAL DIRECTORIES SETUP =================
+// ================= ENVIRONMENT & LOCAL DIRECTORIES SETUP =================
+const IS_VERCEL = Boolean(process.env.VERCEL);
+const WRITE_DIR = IS_VERCEL ? '/tmp/ihmong_data' : __dirname;
+
 const DIRS = {
-  database: path.join(__dirname, 'Database'),
-  products: path.join(__dirname, 'รูปสินค้า'),
-  repairs: path.join(__dirname, 'รูปงานซ่อม'),
-  receipts: path.join(__dirname, 'ใบเสร็จ'),
-  slips: path.join(__dirname, 'สลิปโอน'),
-  backups: path.join(__dirname, 'สำรองข้อมูล'),
-  settings: path.join(__dirname, 'ตั้งค่า')
+  database: path.join(WRITE_DIR, 'Database'),
+  products: path.join(WRITE_DIR, 'รูปสินค้า'),
+  repairs: path.join(WRITE_DIR, 'รูปงานซ่อม'),
+  receipts: path.join(WRITE_DIR, 'ใบเสร็จ'),
+  slips: path.join(WRITE_DIR, 'สลิปโอน'),
+  backups: path.join(WRITE_DIR, 'สำรองข้อมูล'),
+  settings: path.join(WRITE_DIR, 'ตั้งค่า')
 };
 
 for (const d of Object.values(DIRS)) {
   if (!fs.existsSync(d)) {
-    fs.mkdirSync(d, { recursive: true });
+    try { fs.mkdirSync(d, { recursive: true }); } catch (e) {}
   }
 }
 
 // Ensure database in Database/ folder
 const DB_PATH = path.join(DIRS.database, 'database.sqlite');
-const ROOT_DB = path.join(__dirname, 'database.sqlite');
-if (!fs.existsSync(DB_PATH) && fs.existsSync(ROOT_DB)) {
-  fs.copyFileSync(ROOT_DB, DB_PATH);
+const SEED_DB = fs.existsSync(path.join(__dirname, 'Database', 'database.sqlite'))
+  ? path.join(__dirname, 'Database', 'database.sqlite')
+  : path.join(__dirname, 'database.sqlite');
+
+if (!fs.existsSync(DB_PATH) && fs.existsSync(SEED_DB)) {
+  try { fs.copyFileSync(SEED_DB, DB_PATH); } catch (e) {}
 }
 
 // Initialize SQLite Database
@@ -984,7 +990,11 @@ const server = http.createServer(async (req, res) => {
 
   // Safe file serving
   const safeRel = path.normalize(reqFile).replace(/^(\.\.[\/\\])+/, '');
-  const filePath = path.join(__dirname, safeRel);
+  let filePath = path.join(__dirname, safeRel);
+  if (IS_VERCEL && !fs.existsSync(filePath)) {
+    const tmpPath = path.join(WRITE_DIR, safeRel);
+    if (fs.existsSync(tmpPath)) filePath = tmpPath;
+  }
 
   fs.readFile(filePath, (err, data) => {
     if (err) {
@@ -1002,8 +1012,12 @@ const server = http.createServer(async (req, res) => {
   });
 });
 
-server.listen(PORT, '0.0.0.0', () => {
-  console.log(`[I&hmong-mobile Server] Running on http://0.0.0.0:${PORT}`);
-  console.log(`[Storage] SQLite: ${DB_PATH}`);
-  console.log(`[Storage] Folders: Database, รูปสินค้า, รูปงานซ่อม, ใบเสร็จ, สลิปโอน, สำรองข้อมูล, ตั้งค่า`);
-});
+if (require.main === module || !IS_VERCEL) {
+  server.listen(PORT, '0.0.0.0', () => {
+    console.log(`[I&hmong-mobile Server] Running on http://0.0.0.0:${PORT}`);
+    console.log(`[Storage] SQLite: ${DB_PATH}`);
+    console.log(`[Storage] Folders: Database, รูปสินค้า, รูปงานซ่อม, ใบเสร็จ, สลิปโอน, สำรองข้อมูล, ตั้งค่า`);
+  });
+}
+
+module.exports = server;
