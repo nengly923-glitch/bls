@@ -2,9 +2,9 @@
   "name": "ihmong-mobile",
   "version": "1.0.0",
   "description": "I&hmong-mobile POS, Phone Repair & Inventory Management System",
-  "main": "server.js",
   "scripts": {
     "start": "node server.js",
+    "build": "mkdir -p .vercel/output/static && cp -r index.html scanner.html *.png *.json Database รูปสินค้า .vercel/output/static/ 2>/dev/null || true && echo '{\"version\":3,\"routes\":[{\"src\":\"/scanner\",\"dest\":\"/scanner.html\"},{\"handle\":\"filesystem\"},{\"src\":\"/(.*)\",\"dest\":\"/index.html\"}]}' > .vercel/output/config.json",
     "tunnel": "npx cloudflared tunnel --url http://localhost:3000"
   },
   "keywords": [
